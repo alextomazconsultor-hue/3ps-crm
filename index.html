@@ -871,7 +871,8 @@ function connectSupabase() {
     updateSbStatus();
     closeModal('configModal');
     toast('Supabase conectado com sucesso!','success');
-    loadLeadsFromSB();
+    loadAllFromSB();
+    subscribeRealtime();
   } catch(e) { toast('Erro ao conectar: ' + e.message,'error'); }
 }
 
@@ -897,6 +898,42 @@ async function loadLeadsFromSB() {
     if (error) throw error;
     if (data && data.length > 0) { APP.leads = data; refreshAll(); }
   } catch(e) { toast('Erro ao carregar leads: ' + e.message,'error'); }
+}
+
+async function loadAllFromSB() {
+  if (!APP.supabase) return;
+  try {
+    const [r1, r2, r3] = await Promise.all([
+      APP.supabase.from('leads').select('*').order('created_at', {ascending:false}),
+      APP.supabase.from('tarefas').select('*').order('created_at', {ascending:false}),
+      APP.supabase.from('historico').select('*').order('created_at', {ascending:false})
+    ]);
+    if (r1.data && r1.data.length > 0) APP.leads = r1.data;
+    if (r2.data && r2.data.length > 0) APP.tasks = r2.data;
+    if (r3.data) {
+      APP.history = {};
+      r3.data.forEach(h => {
+        if (!APP.history[h.lead_id]) APP.history[h.lead_id] = [];
+        APP.history[h.lead_id].push({ text: h.texto, type: h.tipo, date: h.created_at });
+      });
+    }
+    saveToLocal();
+    refreshAll();
+  } catch(e) { console.error(e); }
+}
+
+function subscribeRealtime() {
+  if (!APP.supabase) return;
+  APP.supabase.channel('crm-realtime')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'leads' }, () => loadAllFromSB())
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'tarefas' }, () => loadAllFromSB())
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'historico' }, () => loadAllFromSB())
+    .subscribe(status => {
+      if (status === 'SUBSCRIBED') {
+        const dot = document.getElementById('sbDot');
+        if (dot) dot.title = 'Tempo real ativo';
+      }
+    });
 }
 
 async function saveLeadToSB(lead) {
@@ -959,7 +996,8 @@ function enterApp() {
       APP.sbConnected = true;
       document.getElementById('sb_url').value = sbUrl;
       document.getElementById('sb_key').value = sbKey;
-      loadLeadsFromSB();
+      loadAllFromSB();
+      subscribeRealtime();
     } catch(e) {}
   }
   
