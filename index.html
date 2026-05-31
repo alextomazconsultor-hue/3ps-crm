@@ -322,6 +322,12 @@ select.form-input option{background:var(--bg-card)}
 svg.icon{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle;flex-shrink:0}
 svg.icon-lg{width:20px;height:20px}
 
+/* ── BROKER FILTER ── */
+.broker-filter-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.broker-filter-label{font-size:12px;color:var(--text-muted);margin-right:4px}
+.bfbtn{padding:5px 12px;border-radius:99px;border:1px solid var(--border);background:transparent;color:var(--text-secondary);font-size:12px;cursor:pointer;transition:all var(--transition);touch-action:manipulation}
+.bfbtn:hover,.bfbtn.active{background:var(--purple-dim);border-color:var(--border-bright);color:var(--purple-light)}
+
 /* ── SETTINGS ── */
 .settings-section{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:20px}
 .settings-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:600;color:var(--text-primary);margin-bottom:4px}
@@ -1208,33 +1214,14 @@ function filterByStatus(s, el) {
 
 // ── KANBAN ──
 let draggedLead = null;
-let kanbanBrokerFilter = 'todos';
-
-function renderKanbanFilterBar() {
-  const bar = document.getElementById('kanbanFilterBar');
-  if (!bar) return;
-  const brokers = ['todos', ...APP.brokers];
-  bar.innerHTML = `<span class="broker-filter-label">Visualizando:</span>` +
-    brokers.map(b => `
-      <button class="bfbtn ${kanbanBrokerFilter===b?'active':''}" onclick="setKanbanFilter('${b}')">
-        ${b === 'todos' ? '👥 Todos' : b}
-      </button>`).join('');
-}
-
-function setKanbanFilter(broker) {
-  kanbanBrokerFilter = broker;
-  renderKanban();
-}
-
 function renderKanban() {
-  renderKanbanFilterBar();
   const statuses = ['novo','atendimento','followup','visita','proposta','fechada','perdido'];
   const wrap = document.getElementById('kanbanWrap');
   const colColors = { novo:'#3b82f6', atendimento:'#8b5cf6', followup:'#f59e0b', visita:'#10b981', proposta:'#ec4899', fechada:'#10b981', perdido:'#ef4444' };
   
+  renderBrokerFilterBar();
   wrap.innerHTML = statuses.map(s => {
-    const allLeads = APP.leads.filter(l => l.status === s);
-    const leads = kanbanBrokerFilter === 'todos' ? allLeads : allLeads.filter(l => l.corretor === kanbanBrokerFilter);
+    const leads = APP.leads.filter(l => l.status === s && (activeBrokerFilter === 'todos' || l.corretor === activeBrokerFilter));
     const cards = leads.map(l => `
       <div class="kanban-card" draggable="true" data-id="${l.id}" onclick="openLeadDetail('${l.id}')">
         <div class="kanban-card-name">${l.nome}</div>
@@ -1247,10 +1234,6 @@ function renderKanban() {
         </div>
       </div>
     `).join('');
-
-    const emptyMsg = kanbanBrokerFilter !== 'todos' && leads.length === 0
-      ? `<div style="padding:8px;text-align:center;font-size:11px;color:var(--text-muted)">Sem leads de ${kanbanBrokerFilter}</div>`
-      : '<div style="padding:8px;text-align:center;font-size:11px;color:var(--text-muted)">Solte aqui</div>';
     
     return `
       <div class="kanban-col" data-status="${s}" 
@@ -1259,10 +1242,10 @@ function renderKanban() {
         ondrop="dropLead(event,'${s}')">
         <div class="kanban-col-head">
           <span class="col-title" style="color:${colColors[s]}">${STATUS_LABELS[s]}</span>
-          <span class="col-count">${leads.length}${kanbanBrokerFilter!=='todos'?'/'+allLeads.length:''}</span>
+          <span class="col-count">${leads.length}</span>
         </div>
         <div style="height:3px;border-radius:99px;background:${colColors[s]};margin:0 10px 8px;opacity:0.5"></div>
-        <div class="kanban-cards">${cards || emptyMsg}</div>
+        <div class="kanban-cards">${cards||'<div style="padding:8px;text-align:center;font-size:11px;color:var(--text-muted)">Solte aqui</div>'}</div>
       </div>
     `;
   }).join('');
@@ -1512,12 +1495,18 @@ function completeFromPanel(id) {
 // ── BROKER FILTER ──
 function renderBrokerFilterBar() {
   const bar = document.getElementById('brokerFilterBar');
-  if (!bar) return;
+  const kbar = document.getElementById('kanbanFilterBar');
   const brokers = ['todos', ...APP.brokers];
-  bar.innerHTML = `<span class="broker-filter-label">Corretor:</span>` +
+  const html = `<span class="broker-filter-label">Corretor:</span>` +
     brokers.map(b => `
       <button class="bfbtn ${activeBrokerFilter===b?'active':''}" onclick="setBrokerFilter('${b}')">
-        ${b === 'todos' ? 'Todos' : b}
+        ${b === 'todos' ? '👥 Todos' : b}
+      </button>`).join('');
+  if (bar) bar.innerHTML = html;
+  if (kbar) kbar.innerHTML = `<span class="broker-filter-label">Visualizando:</span>` +
+    brokers.map(b => `
+      <button class="bfbtn ${activeBrokerFilter===b?'active':''}" onclick="setBrokerFilter('${b}')">
+        ${b === 'todos' ? '👥 Todos' : b}
       </button>`).join('');
 }
 
@@ -1525,6 +1514,7 @@ function setBrokerFilter(broker) {
   activeBrokerFilter = broker;
   renderBrokerFilterBar();
   renderLeadsTable();
+  renderKanban();
 }
 
 
