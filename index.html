@@ -37,7 +37,7 @@
 *{margin:0;padding:0;box-sizing:border-box}
 html{height:100%;scroll-behavior:smooth}
 body{font-family:'DM Sans',sans-serif;background:var(--bg-base);color:var(--text-primary);height:100%;overflow:hidden;font-size:14px}
-button{cursor:pointer;font-family:inherit}
+button{cursor:pointer;font-family:inherit;touch-action:manipulation}
 input,select,textarea{font-family:inherit;outline:none}
 a{text-decoration:none;color:inherit}
 
@@ -47,7 +47,7 @@ a{text-decoration:none;color:inherit}
 ::-webkit-scrollbar-thumb{background:var(--border-bright);border-radius:99px}
 
 /* ── LOGIN ── */
-#loginScreen{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;background:var(--bg-base);background-image:radial-gradient(ellipse 60% 50% at 50% -10%,rgba(139,92,246,0.2) 0%,transparent 70%)}
+#loginScreen{position:fixed;top:0;right:0;bottom:0;left:0;z-index:1000;display:flex;align-items:center;justify-content:center;background:var(--bg-base);background-image:radial-gradient(ellipse 60% 50% at 50% -10%,rgba(139,92,246,0.2) 0%,transparent 70%)}
 .login-card{background:var(--bg-card);border:1px solid var(--border-bright);border-radius:var(--radius-lg);padding:48px 40px;width:100%;max-width:420px;box-shadow:0 0 80px rgba(139,92,246,0.1)}
 .login-logo{display:flex;align-items:center;gap:12px;margin-bottom:36px}
 .login-logo-mark{width:44px;height:44px;background:linear-gradient(135deg,#7c3aed,#a855f7);border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:#fff;letter-spacing:-1px}
@@ -86,7 +86,7 @@ a{text-decoration:none;color:inherit}
 .sidebar-nav{padding:12px 12px;flex:1;overflow-y:auto}
 .nav-section{margin-bottom:20px}
 .nav-label{font-size:10px;font-weight:600;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;padding:0 8px;margin-bottom:6px}
-.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--radius-sm);cursor:pointer;color:var(--text-secondary);font-size:13px;font-weight:400;transition:all var(--transition);position:relative;user-select:none}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--radius-sm);cursor:pointer;color:var(--text-secondary);font-size:13px;font-weight:400;transition:all var(--transition);position:relative;-webkit-user-select:none;user-select:none;touch-action:manipulation}
 .nav-item:hover{background:var(--purple-dim);color:var(--text-primary)}
 .nav-item.active{background:var(--purple-dim);color:var(--purple-light);font-weight:500}
 .nav-item.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:60%;background:var(--purple);border-radius:99px}
@@ -130,7 +130,7 @@ a{text-decoration:none;color:inherit}
 .metrics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:28px}
 .metric-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;position:relative;overflow:hidden;transition:border-color var(--transition)}
 .metric-card:hover{border-color:var(--border-bright)}
-.metric-card::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--accent-from,transparent),var(--accent-to,transparent));opacity:0.04;pointer-events:none}
+.metric-card::after{content:'';position:absolute;top:0;right:0;bottom:0;left:0;background:linear-gradient(135deg,var(--accent-from,transparent),var(--accent-to,transparent));opacity:0.04;pointer-events:none}
 .metric-card.purple{--accent-from:#7c3aed;--accent-to:#a855f7}
 .metric-card.green{--accent-from:#059669;--accent-to:#10b981}
 .metric-card.blue{--accent-from:#1d4ed8;--accent-to:#3b82f6}
@@ -203,10 +203,10 @@ tr:hover .action-btns{opacity:1}
 .kanban-col-accent{height:3px;border-radius:99px;margin:0 14px 10px}
 
 /* ── LEAD DETAIL MODAL ── */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:500;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
+.modal-overlay{position:fixed;top:0;right:0;bottom:0;left:0;background:rgba(0,0,0,0.7);z-index:500;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
 .modal-overlay.open{display:flex}
-.modal{background:var(--bg-card);border:1px solid var(--border-bright);border-radius:var(--radius-lg);width:100%;max-width:700px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 80px rgba(0,0,0,0.6)}
-.modal-head{padding:24px 28px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:16px;position:sticky;top:0;background:var(--bg-card);z-index:1}
+.modal{background:var(--bg-card);border:1px solid var(--border-bright);border-radius:var(--radius-lg);width:100%;max-width:700px;max-height:90vh;overflow-y:auto;-webkit-overflow-scrolling:touch;box-shadow:0 20px 80px rgba(0,0,0,0.6)}
+.modal-head{padding:24px 28px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:16px;position:-webkit-sticky;position:sticky;top:0;background:var(--bg-card);z-index:1}
 .modal-avatar{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;flex-shrink:0}
 .modal-name{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--text-primary)}
 .modal-sub{font-size:13px;color:var(--text-secondary);margin-top:2px}
@@ -297,7 +297,7 @@ select.form-input option{background:var(--bg-card)}
 /* ── MOBILE ── */
 @media(max-width:768px){
   .sidebar{display:none}
-  .sidebar.open{display:flex;position:fixed;inset:0;z-index:200;width:240px}
+  .sidebar.open{display:flex;position:fixed;top:0;right:0;bottom:0;left:0;z-index:200;width:240px}
   .topbar-title{font-size:15px}
   .metrics-grid{grid-template-columns:1fr 1fr}
   .dashboard-grid{grid-template-columns:1fr}
@@ -330,10 +330,10 @@ svg.icon-lg{width:20px;height:20px}
 .disconnected-indicator{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:4px 10px;border-radius:99px;background:rgba(239,68,68,0.1);color:#f87171;border:1px solid rgba(239,68,68,0.2)}
 
 /* ── ASSISTANT MODAL ── */
-#assistantModal{position:fixed;inset:0;z-index:900;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.85);backdrop-filter:blur(6px)}
+#assistantModal{position:fixed;top:0;right:0;bottom:0;left:0;z-index:900;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.85);backdrop-filter:blur(6px)}
 #assistantModal.open{display:flex}
 .assistant-card{background:linear-gradient(145deg,#13131f,#1a1a2e);border:1px solid var(--border-bright);border-radius:var(--radius-lg);padding:36px 40px;max-width:520px;width:100%;box-shadow:0 0 80px rgba(139,92,246,0.2),0 20px 60px rgba(0,0,0,0.6);position:relative;overflow:hidden}
-.assistant-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(139,92,246,0.12),transparent 70%);pointer-events:none}
+.assistant-card::before{content:'';position:absolute;top:0;right:0;bottom:0;left:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(139,92,246,0.12),transparent 70%);pointer-events:none}
 .assistant-header{display:flex;align-items:center;gap:14px;margin-bottom:24px}
 .assistant-icon{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#7c3aed,#a855f7);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;box-shadow:0 0 20px rgba(139,92,246,0.4)}
 .assistant-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--text-primary)}
@@ -623,6 +623,7 @@ CREATE TABLE historico (
         </div>
       </div>
     </div>
+    <div style="padding:0 12px 6px;font-size:10px;color:var(--text-muted)" id="lastSaved"></div>
     <div class="sidebar-supabase">
       <div class="supabase-dot" id="sbDot"></div>
       <span id="sbStatus">Modo demonstração</span>
@@ -787,6 +788,14 @@ CREATE TABLE historico (
           </div>
         </div>
         <div class="settings-section">
+          <div class="settings-title">Backup & Exportação</div>
+          <div class="settings-desc">Exporte seus dados para não perder nada. Use JSON para backup completo ou CSV para abrir no Excel.</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-secondary btn-sm" onclick="exportJSON()">⬇ Exportar JSON (backup)</button>
+            <button class="btn btn-secondary btn-sm" onclick="exportCSV()">⬇ Exportar Leads CSV</button>
+          </div>
+        </div>
+        <div class="settings-section">
           <div class="settings-title">Dados de Demonstração</div>
           <div class="settings-desc">Preencher o sistema com dados fictícios para explorar as funcionalidades.</div>
           <button class="btn btn-secondary btn-sm" onclick="loadDemoData();toast('Dados de demonstração carregados!','success')">Carregar Dados Demo</button>
@@ -946,10 +955,43 @@ function enterApp() {
 
 // ── LOCAL STORAGE ──
 function saveToLocal() {
-  localStorage.setItem('3ps_leads', JSON.stringify(APP.leads));
-  localStorage.setItem('3ps_tasks', JSON.stringify(APP.tasks));
-  localStorage.setItem('3ps_history', JSON.stringify(APP.history));
-  localStorage.setItem('3ps_brokers', JSON.stringify(APP.brokers));
+  try {
+    localStorage.setItem('3ps_leads', JSON.stringify(APP.leads));
+    localStorage.setItem('3ps_tasks', JSON.stringify(APP.tasks));
+    localStorage.setItem('3ps_history', JSON.stringify(APP.history));
+    localStorage.setItem('3ps_brokers', JSON.stringify(APP.brokers));
+    const el = document.getElementById('lastSaved');
+    if (el) el.textContent = '💾 Salvo às ' + new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  } catch(e) {
+    toast('Armazenamento local cheio — exporte um backup!','error');
+  }
+}
+
+// ── EXPORTAÇÃO ──
+function exportJSON() {
+  const data = { leads: APP.leads, tasks: APP.tasks, history: APP.history, brokers: APP.brokers, exported_at: new Date().toISOString() };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = '3ps-crm-backup-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('Backup exportado com sucesso!','success');
+}
+
+function exportCSV() {
+  const headers = ['Nome','Telefone','Email','Origem','Empreendimento','Cidade','Corretor','Status','Observações','Data'];
+  const rows = APP.leads.map(l => [l.nome,l.telefone,l.email,l.origem,l.empreendimento,l.cidade,l.corretor,STATUS_LABELS[l.status]||l.status,l.observacoes,l.created_at].map(v => `"${(v||'').replace(/"/g,'""')}"`));
+  const csv = [headers.map(h=>`"${h}"`), ...rows].map(r => r.join(',')).join('\n');
+  const blob = new Blob(['﻿'+csv], {type:'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = '3ps-leads-' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('CSV exportado com sucesso!','success');
 }
 
 function loadFromLocalStorage() {
