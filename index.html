@@ -2,8 +2,17 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>3Ps CRM — Imobiliário</title>
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#8b5cf6">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="3Ps CRM">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -664,6 +673,10 @@ CREATE TABLE historico (
         <button class="btn btn-secondary" id="addTaskBtn" onclick="openModal('addTaskModal')" style="display:none">
           <svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           Nova Tarefa
+        </button>
+        <button class="btn btn-secondary btn-sm" id="btnInstall" onclick="installApp()" style="display:none;gap:6px" title="Instalar como app">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M12 2v13m0 0l-4-4m4 4l4-4M2 17l.621 2.485A2 2 0 0 0 4.561 21h14.878a2 2 0 0 0 1.94-1.515L22 17"/></svg>
+          Instalar App
         </button>
       </div>
     </div>
@@ -1795,6 +1808,36 @@ function formatDate(dateStr) {
 function formatDateTime(dateStr) {
   if (!dateStr) return '—';
   return new Date(dateStr).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+}
+
+// ── PWA: SERVICE WORKER ──
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
+
+// ── PWA: INSTALL PROMPT ──
+let deferredInstall = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredInstall = e;
+  const btn = document.getElementById('btnInstall');
+  if (btn) btn.style.display = 'inline-flex';
+});
+window.addEventListener('appinstalled', () => {
+  const btn = document.getElementById('btnInstall');
+  if (btn) btn.style.display = 'none';
+  deferredInstall = null;
+  toast('App instalado com sucesso! 🎉', 'success');
+});
+function installApp() {
+  if (!deferredInstall) {
+    toast('Para instalar: menu do navegador → "Adicionar à tela inicial"', 'info');
+    return;
+  }
+  deferredInstall.prompt();
+  deferredInstall.userChoice.then(() => { deferredInstall = null; });
 }
 
 // ── KEYBOARD ──
