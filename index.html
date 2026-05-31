@@ -304,9 +304,17 @@ select.form-input option{background:var(--bg-card)}
   .agenda-grid{grid-template-columns:1fr}
   .form-grid{grid-template-columns:1fr}
   .modal-grid{grid-template-columns:1fr}
-  .kanban-wrap{height:auto;flex-wrap:nowrap}
-  .content{padding:16px}
+  .kanban-wrap{height:auto;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:20px}
+  .kanban-col{min-width:200px;width:200px}
+  .content{padding:12px}
   .mobile-menu-btn{display:flex!important}
+  #page-kanban{overflow-x:hidden}
+  .broker-filter-bar{flex-wrap:wrap;gap:6px;padding:10px 12px}
+  .bfbtn{font-size:11px;padding:4px 10px}
+  .alerts-panel{padding:14px}
+  .modal{max-height:95vh}
+  .modal-body{padding:16px}
+  .modal-head{padding:16px}
 }
 .mobile-menu-btn{display:none;align-items:center;justify-content:center;width:36px;height:36px;border-radius:var(--radius-sm);border:1px solid var(--border);background:transparent;color:var(--text-secondary);cursor:pointer;font-size:20px;margin-right:8px}
 
@@ -739,6 +747,9 @@ CREATE TABLE historico (
 
       <!-- KANBAN -->
       <div class="page" id="page-kanban">
+        <div class="broker-filter-bar" id="kanbanFilterBar" style="margin-bottom:16px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:12px 16px">
+          <span class="broker-filter-label">Visualizando:</span>
+        </div>
         <div class="kanban-wrap" id="kanbanWrap"></div>
       </div>
 
@@ -1155,13 +1166,33 @@ function filterByStatus(s, el) {
 
 // ── KANBAN ──
 let draggedLead = null;
+let kanbanBrokerFilter = 'todos';
+
+function renderKanbanFilterBar() {
+  const bar = document.getElementById('kanbanFilterBar');
+  if (!bar) return;
+  const brokers = ['todos', ...APP.brokers];
+  bar.innerHTML = `<span class="broker-filter-label">Visualizando:</span>` +
+    brokers.map(b => `
+      <button class="bfbtn ${kanbanBrokerFilter===b?'active':''}" onclick="setKanbanFilter('${b}')">
+        ${b === 'todos' ? '👥 Todos' : b}
+      </button>`).join('');
+}
+
+function setKanbanFilter(broker) {
+  kanbanBrokerFilter = broker;
+  renderKanban();
+}
+
 function renderKanban() {
+  renderKanbanFilterBar();
   const statuses = ['novo','atendimento','followup','visita','proposta','fechada','perdido'];
   const wrap = document.getElementById('kanbanWrap');
   const colColors = { novo:'#3b82f6', atendimento:'#8b5cf6', followup:'#f59e0b', visita:'#10b981', proposta:'#ec4899', fechada:'#10b981', perdido:'#ef4444' };
   
   wrap.innerHTML = statuses.map(s => {
-    const leads = APP.leads.filter(l => l.status === s);
+    const allLeads = APP.leads.filter(l => l.status === s);
+    const leads = kanbanBrokerFilter === 'todos' ? allLeads : allLeads.filter(l => l.corretor === kanbanBrokerFilter);
     const cards = leads.map(l => `
       <div class="kanban-card" draggable="true" data-id="${l.id}" onclick="openLeadDetail('${l.id}')">
         <div class="kanban-card-name">${l.nome}</div>
@@ -1174,6 +1205,10 @@ function renderKanban() {
         </div>
       </div>
     `).join('');
+
+    const emptyMsg = kanbanBrokerFilter !== 'todos' && leads.length === 0
+      ? `<div style="padding:8px;text-align:center;font-size:11px;color:var(--text-muted)">Sem leads de ${kanbanBrokerFilter}</div>`
+      : '<div style="padding:8px;text-align:center;font-size:11px;color:var(--text-muted)">Solte aqui</div>';
     
     return `
       <div class="kanban-col" data-status="${s}" 
@@ -1182,10 +1217,10 @@ function renderKanban() {
         ondrop="dropLead(event,'${s}')">
         <div class="kanban-col-head">
           <span class="col-title" style="color:${colColors[s]}">${STATUS_LABELS[s]}</span>
-          <span class="col-count">${leads.length}</span>
+          <span class="col-count">${leads.length}${kanbanBrokerFilter!=='todos'?'/'+allLeads.length:''}</span>
         </div>
         <div style="height:3px;border-radius:99px;background:${colColors[s]};margin:0 10px 8px;opacity:0.5"></div>
-        <div class="kanban-cards">${cards||'<div style="padding:8px;text-align:center;font-size:11px;color:var(--text-muted)">Solte aqui</div>'}</div>
+        <div class="kanban-cards">${cards || emptyMsg}</div>
       </div>
     `;
   }).join('');
