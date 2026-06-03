@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Método 3Ps — Plataforma de Ensino</title>
+  <style>
+/* =============================================
+   MÉTODO 3PS — DESIGN SYSTEM
+   Tema escuro premium
+============================================= */
+
+/* ---- VARIÁVEIS ---- */
+:root {
+  --bg:           #0B0F19;
+  --card:         #111827;
+  --card-2:       #1a2236;
+  --gold:         #D4AF37;
+  --gold-dim:     rgba(212,175,55,0.15);
+  --white:        #FFFFFF;
+  --gray:         #9CA3AF;
+  --gray-dim:     rgba(156,163,175,0.1);
+  --green:        #22c55e;
+  --green-dim:    rgba(34,197,94,0.15);
+  --radius:       12px;
+  --radius-sm:    8px;
+  --navbar-h:     64px;
+  --bottom-nav-h: 64px;
+  --shadow:       0 4px 24px rgba(0,0,0,0.4);
+  --transition:   0.2s ease;
+}
+
+/* ---- RESET ---- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--white);
+  -webkit-font-smoothing: antialiased;
+}
+a { text-decoration: none; color: inherit; }
+ul { list-style: none; }
+img { max-width: 100%; display: block; }
+button { cursor: pointer; border: none; background: none; font: inherit; }
+input { font: inherit; }
+
+/* ---- UTILITÁRIOS ---- */
+.hidden { display: none !important; }
+.gold { color: var(--gold); }
+
+/* ---- SCROLL ---- */
+.page-scroll {
+  height: 100%;
+  overflow-y: auto;
+  padding: 24px 24px 100px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--card-2) transparent;
+}
+.page-scroll::-webkit-scrollbar { width: 6px; }
+.page-scroll::-webkit-scrollbar-track { background: transparent; }
+.page-scroll::-webkit-scrollbar-thumb { background: var(--card-2); border-radius: 3px; }
+
+/* =============================================
+   BOTÕES
+============================================= */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  transition: opacity var(--transition), transform var(--transition);
+}
+.btn:active { transform: scale(0.97); }
+.btn-primary {
+  background: var(--gold);
+  color: #0B0F19;
+}
+.btn-primary:hover { opacity: 0.9; }
+.btn-ghost {
+  background: var(--gray-dim);
+  color: var(--white);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.btn-ghost:hover { background: rgba(255,255,255,0.08); }
+.btn-full { width: 100%; justify-content: center; }
+.btn-sm { padding: 8px 16px; font-size: 13px; }
+
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--gray);
+  font-size: 14px;
+  margin-bottom: 20px;
+  padding: 4px 0;
+  transition: color var(--transition);
+  cursor: pointer;
+}
+.btn-back:hover { color: var(--white); }
+
+/* =============================================
+   SCREENS / ROTEAMENTO
+============================================= */
+.screen { display: none; height: 100%; }
+.screen.active { display: flex; flex-direction: column; }
+#screen-login.active { display: flex; }
+
+/* =============================================
+   LOGIN
+============================================= */
+#screen-login {
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 24px;
+  background: radial-gradient(ellipse at 60% 0%, rgba(212,175,55,0.08) 0%, transparent 70%), var(--bg);
+}
+
+.login-wrap {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.login-logo { text-align: center; }
+.logo-text {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+.login-tagline {
+  color: var(--gray);
+  font-size: 13px;
+  margin-top: 6px;
+  letter-spacing: 0.5px;
+}
+
+.login-form {
+  background: var(--card);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--radius);
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  box-shadow: var(--shadow);
+}
+
+.field-group { display: flex; flex-direction: column; gap: 6px; }
+.field-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gray);
+  letter-spacing: 0.3px;
+}
+.field-group input {
+  background: var(--card-2);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  color: var(--white);
+  font-size: 15px;
+  outline: none;
+  transition: border-color var(--transition);
+}
+.field-group input:focus { border-color: var(--gold); }
+.field-group input::placeholder { color: rgba(156,163,175,0.5); }
+
+.login-error { color: #f87171; font-size: 13px; text-align: center; }
+.login-note { text-align: center; color: var(--gray); font-size: 12px; }
+
+/* =============================================
+   APP SHELL
+============================================= */
+#app-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+#app-shell.hidden { display: none; }
+
+/* =============================================
+   NAVBAR DESKTOP
+============================================= */
+.navbar {
+  height: var(--navbar-h);
+  background: rgba(11,15,25,0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  align-items: center;
+  padding: 0 32px;
+  gap: 32px;
+  flex-shrink: 0;
+  z-index: 100;
+}
+.navbar-brand {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  cursor: pointer;
+  user-select: none;
+  flex-shrink: 0;
+}
+.nav-links { display: flex; gap: 4px; flex: 1; }
+.nav-link {
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gray);
+  transition: color var(--transition), background var(--transition);
+}
+.nav-link:hover { color: var(--white); background: var(--gray-dim); }
+.nav-link.active { color: var(--gold); background: var(--gold-dim); }
+#btn-logout { flex-shrink: 0; font-size: 13px; }
+
+/* =============================================
+   MAIN CONTENT
+============================================= */
+#main-content { flex: 1; overflow: hidden; position: relative; }
+#main-content > .screen { position: absolute; inset: 0; }
+
+/* =============================================
+   PAGE HEADER
+============================================= */
+.page-header { margin-bottom: 28px; }
+.page-title { font-size: 24px; font-weight: 700; letter-spacing: -0.5px; line-height: 1.2; }
+.page-subtitle { color: var(--gray); font-size: 14px; margin-top: 6px; }
+
+/* =============================================
+   SECTION
+============================================= */
+.section { margin-top: 36px; }
+.section-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--gray);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+/* =============================================
+   DASHBOARD — STATS
+============================================= */
+.stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.stat-card {
+  background: var(--card);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--radius);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.stat-label { font-size: 12px; font-weight: 600; color: var(--gray); text-transform: uppercase; letter-spacing: 0.5px; }
+.stat-value { font-size: 28px; font-weight: 800; color: var(--gold); }
+.stat-sub { font-size: 12px; color: var(--gray); }
+
+.progress-bar-wrap {
+  background: var(--card-2);
+  border-radius: 99px;
+  height: 6px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: var(--gold);
+  border-radius: 99px;
+  transition: width 0.5s ease;
+}
+
+/* =============================================
+   CONTINUAR ASSISTINDO
+============================================= */
+.continue-card {
+  background: var(--card);
+  border: 1px solid rgba(212,175,55,0.2);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition);
+}
+.continue-card:hover { border-color: var(--gold); background: var(--card-2); }
+.continue-thumb {
+  width: 80px;
+  height: 52px;
+  background: var(--card-2);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  flex-shrink: 0;
+}
+.continue-info { flex: 1; min-width: 0; }
+.continue-module { font-size: 11px; color: var(--gold); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+.continue-title { font-size: 15px; font-weight: 600; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.continue-progress { font-size: 12px; color: var(--gray); margin-top: 4px; }
+.continue-arrow { font-size: 20px; color: var(--gray); flex-shrink: 0; }
+
+/* =============================================
+   MÓDULOS GRID
+============================================= */
+.modules-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+.modules-grid.large { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+
+.module-card {
+  background: var(--card);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--radius);
+  padding: 20px;
+  cursor: pointer;
+  transition: border-color var(--transition), transform var(--transition);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.module-card:hover { border-color: rgba(212,175,55,0.4); transform: translateY(-2px); }
+.module-card-header { display: flex; align-items: flex-start; gap: 12px; }
+.module-num {
+  width: 36px;
+  height: 36px;
+  background: var(--gold-dim);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--gold);
+  flex-shrink: 0;
+}
+.module-card-title { font-size: 15px; font-weight: 700; line-height: 1.3; }
+.module-card-desc { font-size: 13px; color: var(--gray); line-height: 1.5; }
+.module-card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: auto; }
+.module-lessons-count { font-size: 12px; color: var(--gray); }
+.module-pct { font-size: 12px; font-weight: 700; color: var(--gold); }
+
+/* =============================================
+   LIVE CARD
+============================================= */
+.live-card {
+  background: var(--card);
+  border: 1px solid rgba(212,175,55,0.3);
+  border-radius: var(--radius);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 560px;
+}
+.live-badge {
+  display: inline-flex;
+  background: #ef4444;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  padding: 4px 10px;
+  border-radius: 99px;
+  width: fit-content;
+}
+.live-title { font-size: 17px; font-weight: 700; line-height: 1.4; }
+.live-meta { display: flex; gap: 20px; font-size: 14px; color: var(--gray); }
+
+/* =============================================
+   MÓDULO DETALHE
+============================================= */
+.module-detail-header {
+  background: var(--card);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 24px;
+}
+.module-detail-title { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
+.module-detail-desc { font-size: 14px; color: var(--gray); line-height: 1.6; margin-bottom: 16px; }
+.module-detail-progress { display: flex; align-items: center; gap: 12px; }
+.module-detail-pct { font-size: 13px; font-weight: 700; color: var(--gold); min-width: 36px; }
+.progress-bar-wrap.wide { flex: 1; }
+
+/* =============================================
+   LISTA DE AULAS
+============================================= */
+.lessons-list { display: flex; flex-direction: column; gap: 8px; }
+
+.lesson-item {
+  background: var(--card);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--radius-sm);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition);
+}
+.lesson-item:hover { border-color: rgba(212,175,55,0.3); background: var(--card-2); }
+.lesson-item.active { border-color: var(--gold); background: var(--gold-dim); }
+.lesson-item.done .lesson-item-num { background: var(--green-dim); color: var(--green); }
+
+.lesson-item-num {
+  width: 32px;
+  height: 32px;
+  background: var(--card-2);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--gray);
+  flex-shrink: 0;
+}
+.lesson-item-info { flex: 1; min-width: 0; }
+.lesson-item-title { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lesson-item-status { font-size: 11px; margin-top: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
+.lesson-item-status.done { color: var(--green); }
+.lesson-item-status.current { color: var(--gold); }
+.lesson-item-status.pending { color: var(--gray); }
+.lesson-item-check { font-size: 18px; flex-shrink: 0; }
+
+/* =============================================
+   TELA DA AULA
+============================================= */
+.lesson-layout { display: flex; height: 100%; overflow: hidden; }
+
+.lesson-main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--card-2) transparent;
+}
+.lesson-main::-webkit-scrollbar { width: 6px; }
+.lesson-main::-webkit-scrollbar-thumb { background: var(--card-2); border-radius: 3px; }
+
+.player-wrap {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: #000;
+  margin-bottom: 20px;
+}
+.player-wrap iframe { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+.lesson-info { padding-bottom: 16px; }
+.lesson-title { font-size: 20px; font-weight: 800; margin-bottom: 8px; }
+.lesson-desc { font-size: 14px; color: var(--gray); line-height: 1.7; margin-bottom: 20px; }
+.lesson-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+.lesson-sidebar {
+  width: 320px;
+  flex-shrink: 0;
+  border-left: 1px solid rgba(255,255,255,0.06);
+  overflow-y: auto;
+  padding: 24px 16px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--card-2) transparent;
+}
+.lesson-sidebar::-webkit-scrollbar { width: 4px; }
+.lesson-sidebar::-webkit-scrollbar-thumb { background: var(--card-2); border-radius: 3px; }
+
+.sidebar-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gray);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+.sidebar-list { display: flex; flex-direction: column; gap: 6px; }
+
+/* =============================================
+   MATERIAIS
+============================================= */
+.materials-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+
+.material-card {
+  background: var(--card);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--radius);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: border-color var(--transition);
+}
+.material-card:hover { border-color: rgba(212,175,55,0.3); }
+.material-icon { font-size: 32px; }
+.material-badge {
+  display: inline-flex;
+  background: var(--green-dim);
+  color: var(--green);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  padding: 3px 10px;
+  border-radius: 99px;
+  width: fit-content;
+}
+.material-title { font-size: 15px; font-weight: 700; line-height: 1.3; }
+.material-desc { font-size: 13px; color: var(--gray); line-height: 1.6; flex: 1; }
+
+/* =============================================
+   COMUNIDADE
+============================================= */
+.community-main-card {
+  background: var(--card);
+  border: 1px solid rgba(212,175,55,0.2);
+  border-radius: var(--radius);
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+  max-width: 560px;
+  margin: 0 auto;
+}
+.community-icon { font-size: 48px; }
+.community-card-title { font-size: 20px; font-weight: 800; }
+.community-card-desc { font-size: 14px; color: var(--gray); line-height: 1.7; }
+
+.community-perks { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+.perk-card {
+  background: var(--card);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--radius);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.perk-icon { font-size: 28px; }
+.perk-title { font-size: 15px; font-weight: 700; }
+.perk-desc { font-size: 13px; color: var(--gray); line-height: 1.5; }
+
+/* =============================================
+   BOTTOM NAV (mobile)
+============================================= */
+.bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: var(--bottom-nav-h);
+  background: rgba(17,24,39,0.97);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(255,255,255,0.06);
+  z-index: 200;
+}
+.bottom-nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: var(--gray);
+  transition: color var(--transition);
+  padding: 8px 0;
+}
+.bottom-nav-item.active { color: var(--gold); }
+.bottom-nav-icon { font-size: 20px; }
+.bottom-nav-label { font-size: 10px; font-weight: 600; letter-spacing: 0.3px; }
+
+/* =============================================
+   TOAST
+============================================= */
+.toast {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--card-2);
+  color: var(--white);
+  padding: 12px 24px;
+  border-radius: 99px;
+  font-size: 14px;
+  font-weight: 500;
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: var(--shadow);
+  z-index: 1000;
+  white-space: nowrap;
+  animation: toastIn 0.25s ease;
+}
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(12px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* =============================================
+   RESPONSIVIDADE
+============================================= */
+@media (max-width: 900px) {
+  .lesson-layout { flex-direction: column; }
+  .lesson-sidebar { width: 100%; border-left: none; border-top: 1px solid rgba(255,255,255,0.06); max-height: 280px; }
+}
+
+@media (max-width: 768px) {
+  .navbar { display: none; }
+  .bottom-nav { display: flex; }
+  .page-scroll { padding-bottom: 80px; }
+  .lesson-main { padding-bottom: 80px; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .modules-grid, .modules-grid.large { grid-template-columns: 1fr; }
+  .materials-grid { grid-template-columns: 1fr; }
+  .community-perks { grid-template-columns: 1fr; }
+  .continue-card { flex-direction: column; align-items: flex-start; }
+  .continue-thumb { width: 100%; height: 160px; }
+  .toast { bottom: 76px; }
+  .live-meta { flex-direction: column; gap: 6px; }
+  .page-title { font-size: 20px; }
+}
+
+@media (max-width: 480px) {
+  .stats-grid { grid-template-columns: 1fr; }
+  .page-scroll { padding: 16px 16px 80px; }
+  .lesson-main { padding: 16px; }
+}
+  </style>
+</head>
+<body>
+
+  <!-- ===== TELA: LOGIN ===== -->
+  <div id="screen-login" class="screen active">
+    <div class="login-wrap">
+      <div class="login-logo">
+        <span class="logo-text">Método <span class="gold">3Ps</span></span>
+        <p class="login-tagline">Posicionamento · Prospecção · Performance</p>
+      </div>
+      <form id="form-login" class="login-form" novalidate>
+        <div class="field-group">
+          <label for="input-email">E-mail</label>
+          <input id="input-email" type="email" placeholder="seu@email.com" autocomplete="email" />
+        </div>
+        <div class="field-group">
+          <label for="input-name">Seu nome</label>
+          <input id="input-name" type="text" placeholder="Como você quer ser chamado?" autocomplete="name" />
+        </div>
+        <div class="field-group">
+          <label for="input-pass">Senha</label>
+          <input id="input-pass" type="password" placeholder="Mínimo 3 caracteres" autocomplete="current-password" />
+        </div>
+        <p id="login-error" class="login-error hidden">Preencha todos os campos (mínimo 3 caracteres).</p>
+        <button type="submit" class="btn btn-primary btn-full">Entrar na plataforma</button>
+      </form>
+      <p class="login-note">Acesso exclusivo para alunos do Método 3Ps.</p>
+    </div>
+  </div>
+
+  <!-- ===== APP SHELL ===== -->
+  <div id="app-shell" class="hidden">
+
+    <!-- NAVBAR DESKTOP -->
+    <nav id="navbar" class="navbar">
+      <div class="navbar-brand" id="logo-click">Método <span class="gold">3Ps</span></div>
+      <ul class="nav-links">
+        <li><a href="#" class="nav-link" data-screen="dashboard">Dashboard</a></li>
+        <li><a href="#" class="nav-link" data-screen="modules">Módulos</a></li>
+        <li><a href="#" class="nav-link" data-screen="materials">Materiais</a></li>
+        <li><a href="#" class="nav-link" data-screen="community">Comunidade</a></li>
+      </ul>
+      <button id="btn-logout" class="btn btn-ghost btn-sm">Sair</button>
+    </nav>
+
+    <!-- CONTEÚDO -->
+    <main id="main-content">
+
+      <!-- DASHBOARD -->
+      <div id="screen-dashboard" class="screen">
+        <div class="page-scroll">
+          <div class="page-header">
+            <h1 id="dash-greeting" class="page-title"></h1>
+            <p class="page-subtitle">A direção certa vale mais do que a velocidade.</p>
+          </div>
+          <div class="stats-grid" id="dash-stats"></div>
+          <section class="section">
+            <h2 class="section-title">Continuar assistindo</h2>
+            <div id="dash-continue" class="continue-card"></div>
+          </section>
+          <section class="section">
+            <h2 class="section-title">Módulos do curso</h2>
+            <div id="dash-modules" class="modules-grid"></div>
+          </section>
+          <section class="section">
+            <h2 class="section-title">Próxima Live de Mentoria</h2>
+            <div class="live-card">
+              <div class="live-badge">AO VIVO</div>
+              <h3 class="live-title">Como gerar leads qualificados para imóveis no litoral</h3>
+              <div class="live-meta">
+                <span class="live-day">📅 Quinta-feira</span>
+                <span class="live-time">🕗 20h (horário de Brasília)</span>
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="showToast('Em breve você receberá o link da live!')">Ver detalhes</button>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <!-- MÓDULOS -->
+      <div id="screen-modules" class="screen">
+        <div class="page-scroll">
+          <div class="page-header">
+            <h1 class="page-title">Módulos do curso</h1>
+            <p class="page-subtitle">Navegue pelos módulos e acompanhe seu progresso.</p>
+          </div>
+          <div id="modules-list" class="modules-grid large"></div>
+        </div>
+      </div>
+
+      <!-- MÓDULO DETALHE -->
+      <div id="screen-module-detail" class="screen">
+        <div class="page-scroll">
+          <button class="btn-back" id="btn-back-modules">← Voltar para módulos</button>
+          <div id="module-detail-header" class="module-detail-header"></div>
+          <div id="lessons-list" class="lessons-list"></div>
+        </div>
+      </div>
+
+      <!-- AULA -->
+      <div id="screen-lesson" class="screen">
+        <div class="lesson-layout">
+          <div class="lesson-main">
+            <button class="btn-back" id="btn-back-module">← Voltar para o módulo</button>
+            <div class="player-wrap">
+              <iframe id="lesson-iframe" src="" frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+            </div>
+            <div class="lesson-info">
+              <h2 id="lesson-title" class="lesson-title"></h2>
+              <p id="lesson-desc" class="lesson-desc"></p>
+              <div class="lesson-actions">
+                <button id="btn-complete" class="btn btn-primary">✓ Marcar como concluída</button>
+                <button id="btn-next" class="btn btn-ghost">Próxima aula →</button>
+              </div>
+            </div>
+          </div>
+          <aside class="lesson-sidebar">
+            <h3 class="sidebar-title">Aulas do módulo</h3>
+            <div id="sidebar-lessons" class="sidebar-list"></div>
+          </aside>
+        </div>
+      </div>
+
+      <!-- MATERIAIS -->
+      <div id="screen-materials" class="screen">
+        <div class="page-scroll">
+          <div class="page-header">
+            <h1 class="page-title">Materiais de Apoio</h1>
+            <p class="page-subtitle">Recursos exclusivos para acelerar seus resultados.</p>
+          </div>
+          <div class="materials-grid">
+            <div class="material-card">
+              <div class="material-icon">📋</div>
+              <span class="material-badge">Disponível</span>
+              <h3 class="material-title">Checklist do Corretor Digital</h3>
+              <p class="material-desc">Guia completo com todos os passos para montar sua presença digital como corretor.</p>
+              <button class="btn btn-primary btn-sm" onclick="showToast('PDF disponível em breve!')">Baixar PDF</button>
+            </div>
+            <div class="material-card">
+              <div class="material-icon">💬</div>
+              <span class="material-badge">Disponível</span>
+              <h3 class="material-title">Roteiro de Atendimento no WhatsApp</h3>
+              <p class="material-desc">Scripts prontos para qualificar e engajar leads de imóveis pelo WhatsApp.</p>
+              <button class="btn btn-primary btn-sm" onclick="showToast('PDF disponível em breve!')">Baixar PDF</button>
+            </div>
+            <div class="material-card">
+              <div class="material-icon">🔁</div>
+              <span class="material-badge">Disponível</span>
+              <h3 class="material-title">Modelo de Follow-up</h3>
+              <p class="material-desc">Sequência de mensagens para reativar leads frios e aumentar conversões.</p>
+              <button class="btn btn-primary btn-sm" onclick="showToast('PDF disponível em breve!')">Baixar PDF</button>
+            </div>
+            <div class="material-card">
+              <div class="material-icon">📣</div>
+              <span class="material-badge">Disponível</span>
+              <h3 class="material-title">Checklist do Anúncio Imobiliário</h3>
+              <p class="material-desc">Tudo que um anúncio campeão precisa ter para atrair o comprador certo.</p>
+              <button class="btn btn-primary btn-sm" onclick="showToast('PDF disponível em breve!')">Baixar PDF</button>
+            </div>
+            <div class="material-card">
+              <div class="material-icon">📊</div>
+              <span class="material-badge">Disponível</span>
+              <h3 class="material-title">Planilha de Organização de Leads</h3>
+              <p class="material-desc">Gerencie sua pipeline de clientes com essa planilha simples e eficiente.</p>
+              <button class="btn btn-ghost btn-sm" onclick="showToast('Planilha disponível em breve!')">Baixar Planilha</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- COMUNIDADE -->
+      <div id="screen-community" class="screen">
+        <div class="page-scroll">
+          <div class="page-header">
+            <h1 class="page-title">Comunidade Corretor Digital</h1>
+            <p class="page-subtitle">Você não está sozinho nessa jornada.</p>
+          </div>
+          <div class="community-main-card">
+            <div class="community-icon">👥</div>
+            <h2 class="community-card-title">Grupo Exclusivo de Alunos</h2>
+            <p class="community-card-desc">
+              Participe da nossa comunidade no WhatsApp com corretores de todo o Brasil.
+              Troque experiências, tire dúvidas e acompanhe as lives em tempo real.
+              Um espaço criado para quem quer crescer de verdade no mercado imobiliário digital.
+            </p>
+            <a href="#" class="btn btn-primary" onclick="showToast('Link do grupo em breve!')">Acessar grupo no WhatsApp</a>
+          </div>
+          <section class="section">
+            <h2 class="section-title">Por que participar?</h2>
+            <div class="community-perks">
+              <div class="perk-card">
+                <div class="perk-icon">❓</div>
+                <h3 class="perk-title">Tire suas dúvidas</h3>
+                <p class="perk-desc">Professores e colegas respondem suas perguntas em tempo real.</p>
+              </div>
+              <div class="perk-card">
+                <div class="perk-icon">📡</div>
+                <h3 class="perk-title">Acompanhe as lives</h3>
+                <p class="perk-desc">Receba avisos e links antes de cada mentoria ao vivo.</p>
+              </div>
+              <div class="perk-card">
+                <div class="perk-icon">🏆</div>
+                <h3 class="perk-title">Compartilhe sua evolução</h3>
+                <p class="perk-desc">Celebre suas conquistas e inspire outros corretores da comunidade.</p>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- BOTTOM NAV MOBILE -->
+    <nav id="bottom-nav" class="bottom-nav">
+      <a href="#" class="bottom-nav-item" data-screen="dashboard">
+        <span class="bottom-nav-icon">🏠</span>
+        <span class="bottom-nav-label">Dashboard</span>
+      </a>
+      <a href="#" class="bottom-nav-item" data-screen="modules">
+        <span class="bottom-nav-icon">📚</span>
+        <span class="bottom-nav-label">Módulos</span>
+      </a>
+      <a href="#" class="bottom-nav-item" data-screen="materials">
+        <span class="bottom-nav-icon">📁</span>
+        <span class="bottom-nav-label">Materiais</span>
+      </a>
+      <a href="#" class="bottom-nav-item" data-screen="community">
+        <span class="bottom-nav-icon">👥</span>
+        <span class="bottom-nav-label">Comunidade</span>
+      </a>
+    </nav>
+
+  </div><!-- /app-shell -->
+
+  <!-- TOAST -->
+  <div id="toast" class="toast hidden"></div>
+
+  <script>
+/* ==============================================
+   CADASTRO DE MÓDULOS E AULAS — EDITE AQUI
+   ============================================
+
+   Como trocar o vídeo de uma aula:
+   - Encontre a aula pelo título (title)
+   - Substitua o videoUrl pelo link EMBED
+
+   YouTube normal  → https://www.youtube.com/watch?v=CODIGO
+   YouTube embed   → https://www.youtube.com/embed/CODIGO
+
+   Vimeo embed     → https://player.vimeo.com/video/CODIGO
+   Panda Video     → https://player-vz-XXXX.tv.pandavideo.com.br/embed/?v=CODIGO
+   Bunny Stream    → https://iframe.mediadelivery.net/embed/BIBLIOTECA/CODIGO
+
+============================================== */
+
+const COURSE = [
+  {
+    id: 'm1', n: 1,
+    title: 'Boas-vindas ao Método 3Ps',
+    desc: 'Conheça a plataforma, entenda a metodologia e prepare sua mentalidade para o crescimento.',
+    lessons: [
+      { id: 'm1l1', n: 1, title: 'Introdução à plataforma',
+        desc: 'Nesta aula você conhecerá a plataforma Método 3Ps e aprenderá a navegar por todos os módulos e recursos disponíveis.',
+        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
+      { id: 'm1l2', n: 2, title: 'Como usar o método',
+        desc: 'Entenda a estrutura dos 3Ps — Posicionamento, Prospecção e Performance — e como aplicar cada etapa na sua rotina.',
+        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
+      { id: 'm1l3', n: 3, title: 'Mentalidade do corretor digital',
+        desc: 'Os princípios que diferenciam corretores comuns de corretores que faturam com consistência no ambiente digital.',
+        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' }
+    ]
+  },
+  {
+    id: 'm2', n: 2,
+    title: 'Posicionamento do Corretor Digital',
+    desc: 'Construa autoridade, presença digital e gere confiança antes mesmo de falar sobre imóveis.',
+    lessons: [
+      { id: 'm2l1', n: 1, title: 'Como construir autoridade',
+        desc: 'Estratégias práticas para se tornar referência no mercado imobiliário da sua região usando as redes sociais.',
+        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
+      { id: 'm2l2', n: 2, title: 'Como se posicionar no Instagram',
+        desc: 'Perfil, bio, destaque de stories, feed e cadência de publicações — tudo que você precisa para dominar o Instagram.',
+        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
+      { id: 'm2l3', n: 3, title: 'Como gerar confiança antes da venda',
+        desc: 'A venda começa muito antes do primeiro contato. Aprenda a preparar o terreno para um fechamento natural.',
+        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' }
+    ]
+  },
+  {
+    id: 'm3', n: 3,
+    title: 'Prospecção e Geração de Leads',
+    desc: 'Métodos comprovados para atrair, abordar e organizar novos contatos todos os dias.',
+    lessons: [
+      { id: 'm3l1', n: 1, title: 'Como abordar contatos',
+        desc: 'Scripts e abordagens que geram resposta. Saiba o que falar, como falar e quando falar com novos leads.',
+        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
+      { id: 'm3l2', n: 2, title: 'Como organizar sua base',
+        desc: 'Um sistema simples para nunca mais perder um lead. Classificação, anotações e rotina de acompanhamento.',
+        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
+      { id: 'm3l3', n: 3, title: 'Como gerar oportunidades todos os dias',
+        desc: 'A rotina do corretor digital: hábitos diários que mantêm o pipeline sempre cheio de boas oportunidades.',
+        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' }
+    ]
+  },
+  {
+    id: 'm4', n: 4,
+    title: 'Tráfego Pago para Corretores',
+    desc: 'Aprenda a usar anúncios pagos para atrair leads qualificados e aumentar suas vendas de imóveis.',
+    lessons: [
+      { id: 'm4l1', n: 1, title: 'O que é tráfego pago no mercado imobiliário',
+        desc: 'Entenda o conceito, por que funciona para corretores e como diferenciar tráfego pago de orgânico.',
+        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
+      { id: 'm4l2', n: 2, title: 'Como criar uma oferta simples',
+        desc: 'Antes de anunciar, você precisa de uma oferta irresistível. Aprenda a montar a oferta certa para o público certo.',
+        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
+      { id: 'm4l3', n: 3, title: 'Como montar um anúncio básico',
+        desc: 'Passo a passo para criar seu primeiro anúncio no Meta Ads focado em captação de leads imobiliários.',
+        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
+      { id: 'm4l4', n: 4, title: 'Como atender leads no WhatsApp',
+        desc: 'O lead chegou — e agora? Scripts, tempos de resposta e as primeiras mensagens que convertem.',
+        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' }
+    ]
+  },
+  {
+    id: 'm5', n: 5,
+    title: 'Follow-up e Organização Comercial',
+    desc: 'Transforme leads esquecidos em vendas. A arte do follow-up consistente e inteligente.',
+    lessons: [
+      { id: 'm5l1', n: 1, title: 'Como não perder clientes',
+        desc: 'Os erros mais comuns que fazem corretores perderem vendas prontas — e como evitar cada um deles.',
+        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
+      { id: 'm5l2', n: 2, title: 'Como usar rotina de follow-up',
+        desc: 'Monte uma cadência de acompanhamento que funciona sem ser inconveniente. Timing, frequência e tom.',
+        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
+      { id: 'm5l3', n: 3, title: 'Como priorizar leads quentes',
+        desc: 'Identifique quais leads têm mais chance de fechar hoje e concentre sua energia onde o retorno é maior.',
+        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' }
+    ]
+  },
+  {
+    id: 'm6', n: 6,
+    title: 'Fechamento e Propostas',
+    desc: 'Conduza o cliente até o sim com segurança, clareza e propostas que convencem.',
+    lessons: [
+      { id: 'm6l1', n: 1, title: 'Como apresentar a oportunidade',
+        desc: 'A apresentação que cria desejo. Como mostrar o imóvel certo, para a pessoa certa, no momento certo.',
+        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
+      { id: 'm6l2', n: 2, title: 'Como conduzir objeções',
+        desc: 'Preço, localização, prazo — aprenda a responder as objeções mais comuns sem perder o controle da negociação.',
+        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
+      { id: 'm6l3', n: 3, title: 'Como criar proposta simples',
+        desc: 'Uma proposta clara vence uma complexa sempre. Modelo, estrutura e o que não pode faltar.',
+        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' }
+    ]
+  },
+  {
+    id: 'm7', n: 7,
+    title: 'Lives e Bônus',
+    desc: 'Aulas bônus e lives gravadas com conteúdos exclusivos para turbinar seus resultados.',
+    lessons: [
+      { id: 'm7l1', n: 1, title: 'Aula bônus 1',
+        desc: 'Conteúdo exclusivo extra para complementar sua jornada no Método 3Ps.',
+        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
+      { id: 'm7l2', n: 2, title: 'Aula bônus 2',
+        desc: 'Mais um conteúdo especial preparado para os alunos mais dedicados da plataforma.',
+        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
+      { id: 'm7l3', n: 3, title: 'Live gravada',
+        desc: 'Gravação da mentoria ao vivo com perguntas e respostas, estratégias avançadas e casos reais.',
+        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' }
+    ]
+  }
+];
+
+/* =============================================
+   LÓGICA DA PLATAFORMA
+============================================= */
+
+const STATE = {
+  currentScreen: 'dashboard',
+  currentModuleId: null,
+  currentLessonId: null,
+  logoClickCount: 0,
+  logoClickTimer: null
+};
+
+const KEY_LOGGED = '3ps_loggedIn';
+const KEY_NAME   = '3ps_name';
+const KEY_DONE   = '3ps_completed';
+const KEY_LAST   = '3ps_last';
+
+function getCompleted() {
+  try { return JSON.parse(localStorage.getItem(KEY_DONE)) || []; } catch { return []; }
+}
+function saveCompleted(arr) { localStorage.setItem(KEY_DONE, JSON.stringify(arr)); }
+function getLast() {
+  try { return JSON.parse(localStorage.getItem(KEY_LAST)) || null; } catch { return null; }
+}
+function saveLast(moduleId, lessonId) {
+  localStorage.setItem(KEY_LAST, JSON.stringify({ moduleId, lessonId }));
+}
+
+function totalLessons() { return COURSE.reduce((s, m) => s + m.lessons.length, 0); }
+function completedCount() { return getCompleted().length; }
+function overallPct() {
+  const total = totalLessons();
+  return total ? Math.round((completedCount() / total) * 100) : 0;
+}
+function modulePct(mod) {
+  const done = getCompleted();
+  const c = mod.lessons.filter(l => done.includes(l.id)).length;
+  return mod.lessons.length ? Math.round((c / mod.lessons.length) * 100) : 0;
+}
+
+let toastTimer = null;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.remove('hidden');
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.add('hidden'), 3000);
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const target = document.getElementById('screen-' + id);
+  if (target) target.classList.add('active');
+  STATE.currentScreen = id;
+  document.querySelectorAll('.nav-link').forEach(a => a.classList.toggle('active', a.dataset.screen === id));
+  document.querySelectorAll('.bottom-nav-item').forEach(a => a.classList.toggle('active', a.dataset.screen === id));
+  if (id === 'dashboard') renderDashboard();
+  if (id === 'modules') renderModulesList();
+}
+
+function showModuleDetail(moduleId) {
+  STATE.currentModuleId = moduleId;
+  renderModuleDetail(moduleId);
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-module-detail').classList.add('active');
+  STATE.currentScreen = 'module-detail';
+}
+
+function showLesson(moduleId, lessonId) {
+  STATE.currentModuleId = moduleId;
+  STATE.currentLessonId = lessonId;
+  saveLast(moduleId, lessonId);
+  renderLesson(moduleId, lessonId);
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-lesson').classList.add('active');
+  STATE.currentScreen = 'lesson';
+}
+
+function initAuth() {
+  if (localStorage.getItem(KEY_LOGGED)) enterApp();
+  document.getElementById('form-login').addEventListener('submit', e => {
+    e.preventDefault();
+    const email = document.getElementById('input-email').value.trim();
+    const name  = document.getElementById('input-name').value.trim();
+    const pass  = document.getElementById('input-pass').value.trim();
+    const err   = document.getElementById('login-error');
+    if (email.length < 3 || name.length < 1 || pass.length < 3) {
+      err.classList.remove('hidden'); return;
+    }
+    err.classList.add('hidden');
+    localStorage.setItem(KEY_LOGGED, '1');
+    localStorage.setItem(KEY_NAME, name);
+    enterApp();
+  });
+}
+
+function enterApp() {
+  document.getElementById('screen-login').classList.remove('active');
+  document.getElementById('app-shell').classList.remove('hidden');
+  showScreen('dashboard');
+}
+
+function logout() {
+  localStorage.removeItem(KEY_LOGGED);
+  localStorage.removeItem(KEY_NAME);
+  document.getElementById('app-shell').classList.add('hidden');
+  document.getElementById('screen-login').classList.add('active');
+  document.getElementById('input-email').value = '';
+  document.getElementById('input-name').value  = '';
+  document.getElementById('input-pass').value  = '';
+}
+
+function handleLogoClick() {
+  STATE.logoClickCount++;
+  if (STATE.logoClickTimer) clearTimeout(STATE.logoClickTimer);
+  STATE.logoClickTimer = setTimeout(() => { STATE.logoClickCount = 0; }, 2000);
+  if (STATE.logoClickCount >= 5) {
+    STATE.logoClickCount = 0;
+    localStorage.removeItem(KEY_DONE);
+    localStorage.removeItem(KEY_LAST);
+    showToast('Progresso da demo resetado.');
+    if (STATE.currentScreen === 'dashboard') renderDashboard();
+  }
+}
+
+function renderDashboard() {
+  const name  = localStorage.getItem(KEY_NAME) || 'Aluno';
+  document.getElementById('dash-greeting').textContent = `Olá, ${name}. Continue sua evolução no Método 3Ps.`;
+  const pct   = overallPct();
+  const done  = completedCount();
+  const total = totalLessons();
+  document.getElementById('dash-stats').innerHTML = `
+    <div class="stat-card">
+      <span class="stat-label">Progresso geral</span>
+      <span class="stat-value">${pct}%</span>
+      <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Aulas concluídas</span>
+      <span class="stat-value">${done}</span>
+      <span class="stat-sub">de ${total} aulas</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Total de aulas</span>
+      <span class="stat-value">${total}</span>
+      <span class="stat-sub">${COURSE.length} módulos</span>
+    </div>
+  `;
+  renderContinue();
+  const modGrid = document.getElementById('dash-modules');
+  modGrid.innerHTML = '';
+  COURSE.forEach(mod => modGrid.appendChild(buildModuleCard(mod)));
+}
+
+function renderContinue() {
+  const last = getLast();
+  const el   = document.getElementById('dash-continue');
+  if (!last) {
+    const mod = COURSE[0], lesson = mod.lessons[0];
+    el.innerHTML = continueCardHTML(mod, lesson, 'Começar do início');
+    el.onclick = () => showLesson(mod.id, lesson.id);
+    return;
+  }
+  const mod = COURSE.find(m => m.id === last.moduleId);
+  if (!mod) return;
+  const lesson = mod.lessons.find(l => l.id === last.lessonId);
+  if (!lesson) return;
+  const done = getCompleted();
+  if (done.includes(lesson.id)) {
+    const idx = mod.lessons.indexOf(lesson);
+    if (idx < mod.lessons.length - 1) {
+      const next = mod.lessons[idx + 1];
+      el.innerHTML = continueCardHTML(mod, next, 'Próxima aula');
+      el.onclick = () => showLesson(mod.id, next.id);
+    } else {
+      const modIdx = COURSE.indexOf(mod);
+      if (modIdx < COURSE.length - 1) {
+        const nextMod = COURSE[modIdx + 1], nextLesson = nextMod.lessons[0];
+        el.innerHTML = continueCardHTML(nextMod, nextLesson, 'Próximo módulo');
+        el.onclick = () => showLesson(nextMod.id, nextLesson.id);
+      } else {
+        el.innerHTML = `<div class="continue-info"><p style="color:var(--gold);font-weight:700;">🎉 Curso concluído! Parabéns!</p></div>`;
+        el.onclick = null;
+      }
+    }
+  } else {
+    el.innerHTML = continueCardHTML(mod, lesson, 'Continuar');
+    el.onclick = () => showLesson(mod.id, lesson.id);
+  }
+}
+
+function continueCardHTML(mod, lesson, label) {
+  const pct = modulePct(mod);
+  return `
+    <div class="continue-thumb">▶</div>
+    <div class="continue-info">
+      <div class="continue-module">Módulo ${mod.n} — ${label}</div>
+      <div class="continue-title">${lesson.n}. ${lesson.title}</div>
+      <div class="continue-progress">${pct}% do módulo concluído</div>
+    </div>
+    <div class="continue-arrow">›</div>
+  `;
+}
+
+function renderModulesList() {
+  const list = document.getElementById('modules-list');
+  list.innerHTML = '';
+  COURSE.forEach(mod => list.appendChild(buildModuleCard(mod)));
+}
+
+function buildModuleCard(mod) {
+  const pct = modulePct(mod);
+  const div = document.createElement('div');
+  div.className = 'module-card';
+  div.innerHTML = `
+    <div class="module-card-header">
+      <div class="module-num">${mod.n}</div>
+      <div><div class="module-card-title">${mod.title}</div></div>
+    </div>
+    <div class="module-card-desc">${mod.desc}</div>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
+    <div class="module-card-footer">
+      <span class="module-lessons-count">${mod.lessons.length} aulas</span>
+      <span class="module-pct">${pct}%</span>
+    </div>
+  `;
+  div.addEventListener('click', () => showModuleDetail(mod.id));
+  return div;
+}
+
+function renderModuleDetail(moduleId) {
+  const mod = COURSE.find(m => m.id === moduleId);
+  if (!mod) return;
+  const pct = modulePct(mod);
+  document.getElementById('module-detail-header').innerHTML = `
+    <div class="module-detail-title">Módulo ${mod.n}: ${mod.title}</div>
+    <div class="module-detail-desc">${mod.desc}</div>
+    <div class="module-detail-progress">
+      <span class="module-detail-pct">${pct}%</span>
+      <div class="progress-bar-wrap wide"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
+    </div>
+  `;
+  const list = document.getElementById('lessons-list');
+  list.innerHTML = '';
+  const done = getCompleted(), last = getLast();
+  mod.lessons.forEach(lesson => {
+    const isDone    = done.includes(lesson.id);
+    const isCurrent = last && last.lessonId === lesson.id;
+    const statusLabel = isDone ? 'Concluída' : isCurrent ? 'Atual' : 'Pendente';
+    const statusClass = isDone ? 'done' : isCurrent ? 'current' : 'pending';
+    const item = document.createElement('div');
+    item.className = `lesson-item ${isDone ? 'done' : ''} ${isCurrent && !isDone ? 'active' : ''}`;
+    item.innerHTML = `
+      <div class="lesson-item-num">${isDone ? '✓' : lesson.n}</div>
+      <div class="lesson-item-info">
+        <div class="lesson-item-title">${lesson.title}</div>
+        <div class="lesson-item-status ${statusClass}">${statusLabel}</div>
+      </div>
+      <div class="lesson-item-check">${isDone ? '✅' : '▶'}</div>
+    `;
+    item.addEventListener('click', () => showLesson(moduleId, lesson.id));
+    list.appendChild(item);
+  });
+}
+
+function renderLesson(moduleId, lessonId) {
+  const mod    = COURSE.find(m => m.id === moduleId);
+  if (!mod) return;
+  const lesson = mod.lessons.find(l => l.id === lessonId);
+  if (!lesson) return;
+  document.getElementById('lesson-iframe').src = lesson.videoUrl;
+  document.getElementById('lesson-title').textContent = `${lesson.n}. ${lesson.title}`;
+  document.getElementById('lesson-desc').textContent  = lesson.desc;
+  const btnComplete = document.getElementById('btn-complete');
+  const done = getCompleted();
+  if (done.includes(lessonId)) {
+    btnComplete.textContent = '✓ Aula concluída';
+    btnComplete.disabled = true;
+    btnComplete.style.opacity = '0.5';
+  } else {
+    btnComplete.textContent = '✓ Marcar como concluída';
+    btnComplete.disabled = false;
+    btnComplete.style.opacity = '1';
+  }
+  btnComplete.onclick = () => markComplete(moduleId, lessonId);
+  const btnNext = document.getElementById('btn-next');
+  const idx = mod.lessons.indexOf(lesson);
+  if (idx < mod.lessons.length - 1) {
+    btnNext.style.display = '';
+    btnNext.onclick = () => showLesson(moduleId, mod.lessons[idx + 1].id);
+  } else {
+    btnNext.style.display = 'none';
+  }
+  renderSidebar(mod, lessonId);
+}
+
+function renderSidebar(mod, currentLessonId) {
+  const list = document.getElementById('sidebar-lessons');
+  list.innerHTML = '';
+  const done = getCompleted();
+  mod.lessons.forEach(lesson => {
+    const isDone    = done.includes(lesson.id);
+    const isCurrent = lesson.id === currentLessonId;
+    const item = document.createElement('div');
+    item.className = `lesson-item ${isDone ? 'done' : ''} ${isCurrent ? 'active' : ''}`;
+    item.style.cursor = 'pointer';
+    item.innerHTML = `
+      <div class="lesson-item-num">${isDone ? '✓' : lesson.n}</div>
+      <div class="lesson-item-info">
+        <div class="lesson-item-title">${lesson.title}</div>
+      </div>
+    `;
+    item.addEventListener('click', () => showLesson(mod.id, lesson.id));
+    list.appendChild(item);
+  });
+}
+
+function markComplete(moduleId, lessonId) {
+  const done = getCompleted();
+  if (!done.includes(lessonId)) { done.push(lessonId); saveCompleted(done); }
+  const btnComplete = document.getElementById('btn-complete');
+  btnComplete.textContent = '✓ Aula concluída';
+  btnComplete.disabled = true;
+  btnComplete.style.opacity = '0.5';
+  const mod = COURSE.find(m => m.id === moduleId);
+  if (mod) renderSidebar(mod, lessonId);
+  showToast('Aula marcada como concluída!');
+}
+
+function init() {
+  initAuth();
+  document.getElementById('btn-logout').addEventListener('click', logout);
+  document.querySelectorAll('.nav-link[data-screen]').forEach(a => {
+    a.addEventListener('click', e => { e.preventDefault(); showScreen(a.dataset.screen); });
+  });
+  document.querySelectorAll('.bottom-nav-item[data-screen]').forEach(a => {
+    a.addEventListener('click', e => { e.preventDefault(); showScreen(a.dataset.screen); });
+  });
+  document.getElementById('btn-back-modules').addEventListener('click', () => showScreen('modules'));
+  document.getElementById('btn-back-module').addEventListener('click', () => {
+    if (STATE.currentModuleId) showModuleDetail(STATE.currentModuleId);
+    else showScreen('modules');
+    document.getElementById('lesson-iframe').src = '';
+  });
+  document.getElementById('logo-click').addEventListener('click', handleLogoClick);
+}
+
+document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
