@@ -1,0 +1,2133 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loja 3Ps — Créditos &amp; Recompensas</title>
+<style>
+:root {
+  --bg: #0C1220;
+  --bg2: #111827;
+  --surface: #1A2540;
+  --surface2: #1E2D4E;
+  --surface3: #243358;
+  --border: #2A3A5C;
+  --border2: #364970;
+  --gold: #C9A227;
+  --gold-light: #E8C547;
+  --gold-dim: #8B6F1A;
+  --text: #EAF0FB;
+  --text-muted: #8A9BBF;
+  --text-dim: #4A5B7A;
+  --blue: #1D4ED8;
+  --blue-light: #3B82F6;
+  --green: #059669;
+  --green-light: #10B981;
+  --red: #DC2626;
+  --red-light: #EF4444;
+  --orange: #D97706;
+  --orange-light: #F59E0B;
+  --purple: #7C3AED;
+  --purple-light: #8B5CF6;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  --shadow-lg: 0 8px 48px rgba(0,0,0,0.6);
+  --transition: all 0.2s ease;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+/* ── LAYOUT ── */
+.app { display: flex; min-height: 100vh; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 240px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  z-index: 100;
+  transition: transform 0.3s ease;
+}
+
+.sidebar-logo {
+  padding: 24px 20px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.logo-mark {
+  display: flex; align-items: center; gap: 10px;
+}
+
+.logo-icon {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-size: 16px; color: #0C1220;
+}
+
+.logo-text { line-height: 1.2; }
+.logo-text .brand { font-size: 15px; font-weight: 700; color: var(--text); }
+.logo-text .sub { font-size: 11px; color: var(--text-muted); }
+
+.sidebar-nav { flex: 1; padding: 16px 12px; overflow-y: auto; }
+
+.nav-section-label {
+  font-size: 10px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 1.2px; color: var(--text-dim);
+  padding: 12px 8px 6px;
+}
+
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: var(--radius-sm);
+  cursor: pointer; color: var(--text-muted);
+  font-size: 14px; font-weight: 500;
+  transition: var(--transition);
+  margin-bottom: 2px;
+  border: 1px solid transparent;
+}
+
+.nav-item:hover { background: var(--surface2); color: var(--text); }
+
+.nav-item.active {
+  background: linear-gradient(135deg, rgba(201,162,39,0.15), rgba(201,162,39,0.08));
+  color: var(--gold-light);
+  border-color: rgba(201,162,39,0.25);
+}
+
+.nav-icon { font-size: 16px; width: 20px; text-align: center; }
+
+.sidebar-footer {
+  padding: 16px 12px;
+  border-top: 1px solid var(--border);
+}
+
+.corretor-switch {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: var(--radius-sm);
+  background: var(--surface2);
+  cursor: pointer;
+  transition: var(--transition);
+  border: 1px solid var(--border);
+}
+
+.corretor-switch:hover { border-color: var(--gold-dim); }
+
+.avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; color: #0C1220;
+  flex-shrink: 0;
+}
+
+.avatar.lg { width: 56px; height: 56px; font-size: 20px; }
+
+.corretor-info .name { font-size: 13px; font-weight: 600; color: var(--text); }
+.corretor-info .role { font-size: 11px; color: var(--text-muted); }
+
+/* ── MAIN ── */
+.main {
+  margin-left: 240px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  height: 60px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 50;
+}
+
+.topbar-left { display: flex; align-items: center; gap: 12px; }
+.hamburger {
+  display: none; cursor: pointer; padding: 6px;
+  background: none; border: none; color: var(--text); font-size: 20px;
+}
+
+.page-title { font-size: 18px; font-weight: 700; }
+.page-sub { font-size: 13px; color: var(--text-muted); margin-top: 1px; }
+
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+
+.badge-credits {
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(201,162,39,0.12);
+  border: 1px solid rgba(201,162,39,0.3);
+  border-radius: 20px; padding: 5px 14px;
+  font-size: 13px; font-weight: 600; color: var(--gold-light);
+}
+
+.badge-xp {
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(59,130,246,0.12);
+  border: 1px solid rgba(59,130,246,0.3);
+  border-radius: 20px; padding: 5px 14px;
+  font-size: 13px; font-weight: 600; color: var(--blue-light);
+}
+
+/* ── CONTENT ── */
+.content {
+  flex: 1;
+  padding: 28px 24px;
+  max-width: 1280px;
+  width: 100%;
+}
+
+/* ── PAGES ── */
+.page { display: none; }
+.page.active { display: block; }
+
+/* ── CARDS ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+
+.card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.card-title { font-size: 15px; font-weight: 600; color: var(--text); }
+.card-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+/* ── GRID ── */
+.grid { display: grid; gap: 16px; }
+.grid-4 { grid-template-columns: repeat(4, 1fr); }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+
+/* ── STAT CARD ── */
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  position: relative; overflow: hidden;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+}
+
+.stat-card.gold::before { background: linear-gradient(90deg, var(--gold), var(--gold-light)); }
+.stat-card.blue::before { background: linear-gradient(90deg, var(--blue), var(--blue-light)); }
+.stat-card.green::before { background: linear-gradient(90deg, var(--green), var(--green-light)); }
+.stat-card.red::before { background: linear-gradient(90deg, var(--red), var(--red-light)); }
+.stat-card.purple::before { background: linear-gradient(90deg, var(--purple), var(--purple-light)); }
+.stat-card.orange::before { background: linear-gradient(90deg, var(--orange), var(--orange-light)); }
+
+.stat-icon {
+  width: 40px; height: 40px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; margin-bottom: 12px;
+}
+
+.stat-icon.gold { background: rgba(201,162,39,0.15); }
+.stat-icon.blue { background: rgba(59,130,246,0.15); }
+.stat-icon.green { background: rgba(16,185,129,0.15); }
+.stat-icon.red { background: rgba(239,68,68,0.15); }
+.stat-icon.purple { background: rgba(139,92,246,0.15); }
+.stat-icon.orange { background: rgba(245,158,11,0.15); }
+
+.stat-value { font-size: 28px; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+.stat-label { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+.stat-delta { font-size: 12px; margin-top: 6px; }
+.stat-delta.up { color: var(--green-light); }
+.stat-delta.down { color: var(--red-light); }
+
+/* ── PROGRESS ── */
+.progress-wrap { margin: 8px 0; }
+.progress-label {
+  display: flex; justify-content: space-between;
+  font-size: 12px; color: var(--text-muted); margin-bottom: 6px;
+}
+
+.progress-bar {
+  height: 8px; background: var(--surface3);
+  border-radius: 4px; overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%; border-radius: 4px;
+  transition: width 0.5s ease;
+  background: linear-gradient(90deg, var(--gold), var(--gold-light));
+}
+
+.progress-fill.blue { background: linear-gradient(90deg, var(--blue), var(--blue-light)); }
+.progress-fill.green { background: linear-gradient(90deg, var(--green), var(--green-light)); }
+
+/* ── LEVEL BADGE ── */
+.level-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(201,162,39,0.12);
+  border: 1px solid rgba(201,162,39,0.3);
+  border-radius: 20px; padding: 4px 12px;
+  font-size: 12px; font-weight: 600; color: var(--gold-light);
+}
+
+/* ── STATUS BADGE ── */
+.status-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  border-radius: 20px; padding: 3px 10px; font-size: 11px; font-weight: 600;
+}
+
+.status-badge.em-risco { background: rgba(220,38,38,0.15); color: var(--red-light); border: 1px solid rgba(220,38,38,0.3); }
+.status-badge.aquecendo { background: rgba(245,158,11,0.15); color: var(--orange-light); border: 1px solid rgba(245,158,11,0.3); }
+.status-badge.produtivo { background: rgba(16,185,129,0.15); color: var(--green-light); border: 1px solid rgba(16,185,129,0.3); }
+.status-badge.alta { background: rgba(59,130,246,0.15); color: var(--blue-light); border: 1px solid rgba(59,130,246,0.3); }
+.status-badge.elite { background: rgba(201,162,39,0.15); color: var(--gold-light); border: 1px solid rgba(201,162,39,0.3); }
+
+/* ── ACTION BUTTONS ── */
+.action-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+
+.action-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  cursor: pointer;
+  transition: var(--transition);
+  text-align: left;
+  display: flex; align-items: center; gap: 14px;
+  color: var(--text);
+}
+
+.action-btn:hover {
+  border-color: var(--gold-dim);
+  background: var(--surface2);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+
+.action-btn:active { transform: translateY(0); }
+
+.action-btn-icon {
+  width: 42px; height: 42px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+  background: var(--surface3);
+}
+
+.action-btn-info { flex: 1; }
+.action-btn-name { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+.action-btn-meta { display: flex; gap: 8px; }
+
+.chip {
+  font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 10px;
+}
+
+.chip.xp { background: rgba(59,130,246,0.2); color: var(--blue-light); }
+.chip.credits { background: rgba(201,162,39,0.2); color: var(--gold-light); }
+
+/* ── SHOP ── */
+.shop-filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+
+.filter-btn {
+  padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600;
+  cursor: pointer; border: 1px solid var(--border);
+  background: var(--surface); color: var(--text-muted);
+  transition: var(--transition);
+}
+
+.filter-btn:hover { border-color: var(--gold-dim); color: var(--text); }
+
+.filter-btn.active {
+  background: rgba(201,162,39,0.12);
+  border-color: rgba(201,162,39,0.4);
+  color: var(--gold-light);
+}
+
+.shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+
+.reward-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  display: flex; flex-direction: column; gap: 12px;
+  transition: var(--transition);
+}
+
+.reward-card:hover { border-color: var(--border2); transform: translateY(-2px); box-shadow: var(--shadow); }
+
+.reward-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+
+.reward-icon { font-size: 28px; }
+
+.reward-cat {
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px;
+  padding: 2px 8px; border-radius: 10px;
+}
+
+.reward-cat.reconhecimento { background: rgba(139,92,246,0.15); color: var(--purple-light); }
+.reward-cat.beneficio { background: rgba(16,185,129,0.15); color: var(--green-light); }
+.reward-cat.oportunidade { background: rgba(59,130,246,0.15); color: var(--blue-light); }
+.reward-cat.desenvolvimento { background: rgba(245,158,11,0.15); color: var(--orange-light); }
+.reward-cat.financeiro { background: rgba(201,162,39,0.15); color: var(--gold-light); }
+
+.reward-name { font-size: 14px; font-weight: 700; }
+.reward-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+
+.reward-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: auto; padding-top: 12px; border-top: 1px solid var(--border);
+}
+
+.reward-cost {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 16px; font-weight: 800; color: var(--gold-light);
+}
+
+.reward-cost span { font-size: 12px; font-weight: 500; color: var(--text-muted); }
+
+.btn {
+  padding: 8px 18px; border-radius: var(--radius-sm);
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  border: none; transition: var(--transition);
+  display: inline-flex; align-items: center; gap: 6px;
+}
+
+.btn-gold {
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  color: #0C1220;
+}
+
+.btn-gold:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+.btn-outline {
+  background: transparent; border: 1px solid var(--border2);
+  color: var(--text-muted);
+}
+
+.btn-outline:hover { border-color: var(--gold-dim); color: var(--text); background: var(--surface2); }
+
+.btn-green { background: var(--green); color: #fff; }
+.btn-green:hover { background: var(--green-light); }
+
+.btn-red { background: var(--red); color: #fff; }
+.btn-red:hover { background: var(--red-light); }
+
+.btn-blue { background: var(--blue); color: #fff; }
+.btn-blue:hover { background: var(--blue-light); }
+
+.btn-sm { padding: 5px 12px; font-size: 12px; }
+.btn-block { width: 100%; justify-content: center; }
+
+.btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; filter: none; }
+
+/* ── TABLE ── */
+.table-wrap { overflow-x: auto; }
+
+table { width: 100%; border-collapse: collapse; }
+
+thead tr { border-bottom: 1px solid var(--border); }
+
+th {
+  text-align: left; font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.8px;
+  color: var(--text-dim); padding: 10px 14px;
+}
+
+td { padding: 12px 14px; font-size: 13px; border-bottom: 1px solid var(--border); }
+
+tr:last-child td { border-bottom: none; }
+
+tbody tr:hover { background: rgba(255,255,255,0.02); }
+
+.amount-pos { color: var(--green-light); font-weight: 700; }
+.amount-neg { color: var(--red-light); font-weight: 700; }
+
+/* ── RANKING ── */
+.rank-sort { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+
+.rank-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  display: flex; align-items: center; gap: 16px;
+  margin-bottom: 10px;
+  transition: var(--transition);
+}
+
+.rank-card:hover { border-color: var(--border2); }
+.rank-card.top1 { border-color: var(--gold-dim); background: linear-gradient(135deg, rgba(201,162,39,0.08), var(--surface)); }
+.rank-card.top2 { border-color: rgba(160,160,160,0.3); }
+.rank-card.top3 { border-color: rgba(180,120,60,0.3); }
+
+.rank-pos {
+  font-size: 22px; font-weight: 900; width: 36px; text-align: center; flex-shrink: 0;
+}
+
+.rank-pos.p1 { color: var(--gold-light); }
+.rank-pos.p2 { color: #C0C0C0; }
+.rank-pos.p3 { color: #CD7F32; }
+.rank-pos.other { color: var(--text-dim); font-size: 16px; }
+
+.rank-info { flex: 1; min-width: 0; }
+.rank-name { font-size: 15px; font-weight: 700; }
+.rank-level { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+.rank-stats { display: flex; gap: 20px; }
+.rank-stat { text-align: center; }
+.rank-stat .val { font-size: 16px; font-weight: 700; }
+.rank-stat .lbl { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+
+/* ── TOAST ── */
+.toast-container {
+  position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+  display: flex; flex-direction: column; gap: 10px;
+  pointer-events: none;
+}
+
+.toast {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  min-width: 280px; max-width: 360px;
+  box-shadow: var(--shadow-lg);
+  animation: toastIn 0.3s ease;
+  pointer-events: all;
+  display: flex; align-items: flex-start; gap: 12px;
+}
+
+.toast.success { border-left: 3px solid var(--green-light); }
+.toast.warning { border-left: 3px solid var(--orange-light); }
+.toast.error { border-left: 3px solid var(--red-light); }
+.toast.info { border-left: 3px solid var(--blue-light); }
+.toast.gold { border-left: 3px solid var(--gold-light); }
+
+.toast-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+.toast-content { flex: 1; }
+.toast-title { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+.toast-msg { font-size: 12px; color: var(--text-muted); }
+
+@keyframes toastIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes toastOut { from { opacity: 1; } to { opacity: 0; transform: translateX(20px); } }
+.toast.out { animation: toastOut 0.3s ease forwards; }
+
+/* ── MODAL ── */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+  z-index: 1000; display: none; align-items: center; justify-content: center;
+  padding: 20px;
+}
+
+.modal-overlay.open { display: flex; }
+
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  max-width: 440px; width: 100%;
+  box-shadow: var(--shadow-lg);
+  animation: modalIn 0.2s ease;
+}
+
+@keyframes modalIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+.modal-title { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+.modal-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; }
+.modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+
+/* ── FORM ── */
+.form-group { margin-bottom: 16px; }
+.form-label { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; display: block; }
+
+.form-input, .form-select {
+  width: 100%; padding: 10px 14px;
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); color: var(--text);
+  font-size: 14px; transition: var(--transition);
+  appearance: none;
+}
+
+.form-input:focus, .form-select:focus {
+  outline: none; border-color: var(--gold-dim);
+  box-shadow: 0 0 0 3px rgba(201,162,39,0.1);
+}
+
+/* ── QUOTE CARD ── */
+.quote-card {
+  background: linear-gradient(135deg, rgba(201,162,39,0.08), rgba(201,162,39,0.03));
+  border: 1px solid rgba(201,162,39,0.2);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.quote-card::before {
+  content: '"';
+  position: absolute; top: -20px; left: 16px;
+  font-size: 120px; color: rgba(201,162,39,0.08);
+  font-family: Georgia, serif; line-height: 1;
+}
+
+.quote-text { font-size: 14px; font-style: italic; color: var(--text-muted); line-height: 1.6; position: relative; }
+.quote-text strong { color: var(--gold-light); }
+
+/* ── DASHBOARD HERO ── */
+.hero-card {
+  background: linear-gradient(135deg, var(--surface2) 0%, rgba(201,162,39,0.1) 100%);
+  border: 1px solid rgba(201,162,39,0.2);
+  border-radius: var(--radius);
+  padding: 24px;
+  display: flex; align-items: center; gap: 20px;
+  position: relative; overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.hero-card::after {
+  content: '3Ps';
+  position: absolute; right: -10px; bottom: -20px;
+  font-size: 100px; font-weight: 900; color: rgba(201,162,39,0.04);
+  line-height: 1;
+}
+
+.hero-info { flex: 1; }
+.hero-name { font-size: 22px; font-weight: 800; }
+.hero-title { font-size: 13px; color: var(--text-muted); margin-top: 2px; margin-bottom: 12px; }
+
+/* ── STREAK ── */
+.streak-wrap { display: flex; align-items: center; gap: 8px; }
+.streak-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--surface3);
+}
+
+.streak-dot.active { background: var(--gold-light); box-shadow: 0 0 8px var(--gold); }
+
+/* ── MANAGER PANEL ── */
+.request-item {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 8px;
+}
+
+.request-info { flex: 1; }
+.request-name { font-size: 13px; font-weight: 600; }
+.request-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.request-actions { display: flex; gap: 8px; }
+
+/* ── SETTINGS ── */
+.settings-section { margin-bottom: 28px; }
+.settings-title { font-size: 15px; font-weight: 700; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+
+.select-corretor-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
+
+.corretor-select-card {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  cursor: pointer;
+  text-align: center;
+  transition: var(--transition);
+}
+
+.corretor-select-card:hover { border-color: var(--gold-dim); }
+.corretor-select-card.active { border-color: var(--gold); background: rgba(201,162,39,0.08); }
+.corretor-select-card .avatar { margin: 0 auto 8px; }
+.corretor-select-card .cname { font-size: 13px; font-weight: 600; }
+.corretor-select-card .clevel { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+/* ── DIVIDER ── */
+.divider { height: 1px; background: var(--border); margin: 20px 0; }
+
+/* ── EMPTY STATE ── */
+.empty-state { text-align: center; padding: 48px 20px; color: var(--text-dim); }
+.empty-state .icon { font-size: 40px; margin-bottom: 12px; opacity: 0.4; }
+.empty-state p { font-size: 14px; }
+
+/* ── MOBILE OVERLAY ── */
+.sidebar-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5); z-index: 99;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1024px) {
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .rank-stats { gap: 12px; }
+}
+
+@media (max-width: 768px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .sidebar-overlay.open { display: block; }
+  .main { margin-left: 0; }
+  .hamburger { display: block; }
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .grid-3 { grid-template-columns: repeat(2, 1fr); }
+  .grid-2 { grid-template-columns: 1fr; }
+  .content { padding: 16px; }
+  .topbar { padding: 0 16px; }
+  .rank-stats { display: none; }
+  .hero-card { flex-direction: column; align-items: flex-start; }
+  .badge-credits, .badge-xp { display: none; }
+  .action-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+  .grid-4 { grid-template-columns: 1fr; }
+  .grid-3 { grid-template-columns: 1fr; }
+  .shop-grid { grid-template-columns: 1fr; }
+}
+
+/* ── PULSE ANIMATION ── */
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+.pulse { animation: pulse 2s ease infinite; }
+
+/* ── GLOW ── */
+.glow-gold { box-shadow: 0 0 20px rgba(201,162,39,0.3); }
+
+/* ── APPROVAL PENDING ── */
+.pending-tag {
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  background: rgba(245,158,11,0.15); color: var(--orange-light);
+  border: 1px solid rgba(245,158,11,0.3); border-radius: 10px;
+  padding: 2px 8px;
+}
+
+.approved-tag {
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  background: rgba(16,185,129,0.15); color: var(--green-light);
+  border: 1px solid rgba(16,185,129,0.3); border-radius: 10px;
+  padding: 2px 8px;
+}
+
+.refused-tag {
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  background: rgba(220,38,38,0.15); color: var(--red-light);
+  border: 1px solid rgba(220,38,38,0.3); border-radius: 10px;
+  padding: 2px 8px;
+}
+
+.done-tag {
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  background: rgba(16,185,129,0.1); color: var(--green-light);
+  border: 1px solid rgba(16,185,129,0.2); border-radius: 10px;
+  padding: 2px 8px;
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">
+        <div class="logo-icon">3P</div>
+        <div class="logo-text">
+          <div class="brand">Loja 3Ps</div>
+          <div class="sub">Créditos &amp; Recompensas</div>
+        </div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Principal</div>
+      <div class="nav-item active" onclick="navigate('dashboard')">
+        <span class="nav-icon">📊</span> Dashboard
+      </div>
+      <div class="nav-item" onclick="navigate('acoes')">
+        <span class="nav-icon">⚡</span> Ações do Dia
+      </div>
+      <div class="nav-item" onclick="navigate('loja')">
+        <span class="nav-icon">🏪</span> Loja 3Ps
+      </div>
+      <div class="nav-item" onclick="navigate('historico')">
+        <span class="nav-icon">📋</span> Histórico
+      </div>
+      <div class="nav-section-label">Equipe</div>
+      <div class="nav-item" onclick="navigate('ranking')">
+        <span class="nav-icon">🏆</span> Ranking
+      </div>
+      <div class="nav-item" onclick="navigate('gestor')">
+        <span class="nav-icon">👔</span> Painel do Gestor
+      </div>
+      <div class="nav-section-label">Sistema</div>
+      <div class="nav-item" onclick="navigate('config')">
+        <span class="nav-icon">⚙️</span> Configurações
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="corretor-switch" onclick="navigate('config')">
+        <div class="avatar" id="sidebar-avatar">AL</div>
+        <div class="corretor-info">
+          <div class="name" id="sidebar-name">Alex</div>
+          <div class="role">Corretor ativo</div>
+        </div>
+        <span style="color:var(--text-dim);font-size:12px;">↕</span>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="hamburger" onclick="toggleSidebar()">☰</button>
+        <div>
+          <div class="page-title" id="topbar-title">Dashboard</div>
+          <div class="page-sub" id="topbar-sub">Bem-vindo de volta</div>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="badge-xp">⚡ <span id="topbar-xp">0</span> XP</div>
+        <div class="badge-credits">🪙 <span id="topbar-credits">0</span> créditos</div>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+      <!-- ═══ DASHBOARD ═══ -->
+      <div class="page active" id="page-dashboard">
+        <div class="hero-card" id="hero-card">
+          <div class="avatar lg" id="hero-avatar">AL</div>
+          <div class="hero-info">
+            <div class="hero-name" id="hero-name">Alex</div>
+            <div class="hero-title" id="hero-level-label">Nível 1 — Iniciante 3Ps</div>
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+              <div class="level-badge" id="hero-level-badge">🏅 Iniciante 3Ps</div>
+              <div class="status-badge em-risco" id="hero-status-badge">Em Risco</div>
+            </div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;">
+            <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">Streak</div>
+            <div style="font-size:24px;font-weight:800;color:var(--gold-light);" id="hero-streak">🔥 0</div>
+            <div style="font-size:11px;color:var(--text-muted);">dias seguidos</div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:24px;">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Progresso de Nível</div>
+              <div class="card-sub" id="xp-progress-label">0 / 300 XP para o próximo nível</div>
+            </div>
+            <div style="font-size:28px;font-weight:900;color:var(--gold-light);" id="hero-xp-val">0</div>
+          </div>
+          <div class="progress-bar" style="height:12px;">
+            <div class="progress-fill" id="xp-progress-bar" style="width:0%"></div>
+          </div>
+        </div>
+
+        <div class="grid grid-4" style="margin-bottom:24px;">
+          <div class="stat-card gold">
+            <div class="stat-icon gold">🪙</div>
+            <div class="stat-value" id="stat-credits" style="color:var(--gold-light);">0</div>
+            <div class="stat-label">Créditos Disponíveis</div>
+          </div>
+          <div class="stat-card green">
+            <div class="stat-icon green">📈</div>
+            <div class="stat-value" id="stat-ganhos-hoje" style="color:var(--green-light);">0</div>
+            <div class="stat-label">Ganhos Hoje</div>
+          </div>
+          <div class="stat-card red">
+            <div class="stat-icon red">💸</div>
+            <div class="stat-value" id="stat-gastos" style="color:var(--red-light);">0</div>
+            <div class="stat-label">Créditos Gastos</div>
+          </div>
+          <div class="stat-card blue">
+            <div class="stat-icon blue">⚡</div>
+            <div class="stat-value" id="stat-acoes-hoje" style="color:var(--blue-light);">0</div>
+            <div class="stat-label">Ações Hoje</div>
+          </div>
+        </div>
+
+        <div class="grid grid-2" style="margin-bottom:24px;">
+          <div class="quote-card">
+            <div class="quote-text">
+              <strong>"Execução vira crédito.</strong> Disciplina vira reconhecimento. <strong>Resultado vira oportunidade."</strong>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Status do Dia</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;">
+                <span style="font-size:13px;color:var(--text-muted);">Ações registradas</span>
+                <span style="font-size:18px;font-weight:800;" id="dash-acoes-cnt">0</span>
+              </div>
+              <div id="status-indicator" style="padding:14px;border-radius:var(--radius-sm);background:var(--surface2);text-align:center;">
+                <div style="font-size:22px;margin-bottom:4px;">😴</div>
+                <div style="font-size:14px;font-weight:700;color:var(--red-light);">Em Risco</div>
+                <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Registre ações para mudar seu status</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Últimas Atividades</div>
+            <span class="filter-btn" onclick="navigate('historico')" style="cursor:pointer;font-size:12px;">Ver tudo →</span>
+          </div>
+          <div id="dash-history-list">
+            <div class="empty-state">
+              <div class="icon">📭</div>
+              <p>Nenhuma atividade registrada ainda.<br>Comece registrando ações do dia!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ AÇÕES ═══ -->
+      <div class="page" id="page-acoes">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;">
+          <div>
+            <div style="font-size:20px;font-weight:800;">Registre suas ações</div>
+            <div style="font-size:13px;color:var(--text-muted);margin-top:2px;">
+              "O que não está registrado, não gera cultura."
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;">
+            <div style="font-size:13px;color:var(--text-muted);">Ações hoje:</div>
+            <div style="font-size:24px;font-weight:800;color:var(--blue-light);" id="acoes-contador">0</div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:16px;">
+          <div class="card" style="background:rgba(245,158,11,0.06);border-color:rgba(245,158,11,0.2);">
+            <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--orange-light);">
+              <span>⚠️</span>
+              <span>Anti-abuso ativo: abordagens (máx. 50/dia) e follow-ups (máx. 30/dia). As demais ações são monitoradas para excessos.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="action-grid" id="action-grid">
+          <!-- Preenchido por JS -->
+        </div>
+      </div>
+
+      <!-- ═══ LOJA ═══ -->
+      <div class="page" id="page-loja">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;">
+          <div>
+            <div style="font-size:20px;font-weight:800;">Loja 3Ps</div>
+            <div style="font-size:13px;color:var(--text-muted);margin-top:2px;">
+              "Premiamos comportamento, não apenas resultado."
+            </div>
+          </div>
+          <div class="badge-credits" style="display:flex;">🪙 <span id="loja-credits-val">0</span> disponíveis</div>
+        </div>
+
+        <div class="shop-filters">
+          <button class="filter-btn active" onclick="filterShop('all', this)">Todos</button>
+          <button class="filter-btn" onclick="filterShop('reconhecimento', this)">🏅 Reconhecimento</button>
+          <button class="filter-btn" onclick="filterShop('beneficio', this)">🎁 Benefício</button>
+          <button class="filter-btn" onclick="filterShop('oportunidade', this)">🚀 Oportunidade</button>
+          <button class="filter-btn" onclick="filterShop('desenvolvimento', this)">📚 Desenvolvimento</button>
+          <button class="filter-btn" onclick="filterShop('financeiro', this)">💰 Financeiro</button>
+        </div>
+
+        <div class="shop-grid" id="shop-grid">
+          <!-- Preenchido por JS -->
+        </div>
+      </div>
+
+      <!-- ═══ HISTÓRICO ═══ -->
+      <div class="page" id="page-historico">
+        <div style="margin-bottom:20px;">
+          <div style="font-size:20px;font-weight:800;">Histórico de Créditos</div>
+          <div style="font-size:13px;color:var(--text-muted);margin-top:2px;">Registro completo de todas as movimentações</div>
+        </div>
+        <div class="card">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Tipo</th>
+                  <th>Descrição</th>
+                  <th>XP</th>
+                  <th>Créditos</th>
+                  <th>Saldo</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="historico-tbody">
+                <tr>
+                  <td colspan="7" style="text-align:center;color:var(--text-dim);padding:32px;">Nenhuma movimentação registrada</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ RANKING ═══ -->
+      <div class="page" id="page-ranking">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;">
+          <div>
+            <div style="font-size:20px;font-weight:800;">Ranking da Equipe</div>
+            <div style="font-size:13px;color:var(--text-muted);margin-top:2px;">
+              "O corretor 3Ps cria oportunidade."
+            </div>
+          </div>
+        </div>
+        <div class="rank-sort">
+          <span style="font-size:12px;color:var(--text-muted);align-self:center;">Ordenar por:</span>
+          <button class="filter-btn active" onclick="sortRanking('xp', this)">XP Total</button>
+          <button class="filter-btn" onclick="sortRanking('creditos', this)">Créditos</button>
+          <button class="filter-btn" onclick="sortRanking('hoje', this)">Ganhos Hoje</button>
+          <button class="filter-btn" onclick="sortRanking('acoes', this)">Ações Hoje</button>
+        </div>
+        <div id="ranking-list"><!-- Preenchido por JS --></div>
+      </div>
+
+      <!-- ═══ GESTOR ═══ -->
+      <div class="page" id="page-gestor">
+        <div style="margin-bottom:20px;">
+          <div style="font-size:20px;font-weight:800;">Painel do Gestor</div>
+          <div style="font-size:13px;color:var(--text-muted);margin-top:2px;">Visão consolidada e gestão de recompensas</div>
+        </div>
+
+        <div class="grid grid-4" style="margin-bottom:24px;">
+          <div class="stat-card green">
+            <div class="stat-icon green">📈</div>
+            <div class="stat-value" id="g-gerados" style="color:var(--green-light);">0</div>
+            <div class="stat-label">Créditos Gerados</div>
+          </div>
+          <div class="stat-card red">
+            <div class="stat-icon red">💸</div>
+            <div class="stat-value" id="g-gastos" style="color:var(--red-light);">0</div>
+            <div class="stat-label">Créditos Gastos</div>
+          </div>
+          <div class="stat-card blue">
+            <div class="stat-icon blue">🎁</div>
+            <div class="stat-value" id="g-resgates" style="color:var(--blue-light);">0</div>
+            <div class="stat-label">Resgates Total</div>
+          </div>
+          <div class="stat-card orange">
+            <div class="stat-icon orange">⏳</div>
+            <div class="stat-value" id="g-pendentes" style="color:var(--orange-light);">0</div>
+            <div class="stat-label">Aguardando Aprovação</div>
+          </div>
+        </div>
+
+        <div class="grid grid-2" style="margin-bottom:24px;">
+          <div class="stat-card gold">
+            <div class="stat-icon gold">💰</div>
+            <div style="font-size:13px;color:var(--text-muted);margin-bottom:6px;">Custo Est. Premiações Financeiras</div>
+            <div class="stat-value" id="g-custo" style="color:var(--gold-light);font-size:22px;">R$ 0</div>
+          </div>
+          <div class="card">
+            <div class="card-title" style="margin-bottom:12px;">Destaques da Equipe</div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <div style="display:flex;justify-content:space-between;font-size:13px;">
+                <span style="color:var(--text-muted);">🪙 Mais créditos:</span>
+                <span id="g-top-credits" style="font-weight:700;">—</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:13px;">
+                <span style="color:var(--text-muted);">⚡ Mais execução hoje:</span>
+                <span id="g-top-acoes" style="font-weight:700;">—</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:13px;">
+                <span style="color:var(--text-muted);">🏆 Maior XP:</span>
+                <span id="g-top-xp" style="font-weight:700;">—</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Solicitações de Resgate</div>
+              <div class="card-sub">Recompensas acima de 1.000 créditos aguardando aprovação</div>
+            </div>
+          </div>
+          <div id="solicitacoes-list">
+            <div class="empty-state">
+              <div class="icon">✅</div>
+              <p>Nenhuma solicitação pendente</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ CONFIG ═══ -->
+      <div class="page" id="page-config">
+        <div style="margin-bottom:20px;">
+          <div style="font-size:20px;font-weight:800;">Configurações</div>
+          <div style="font-size:13px;color:var(--text-muted);margin-top:2px;">Gerencie o sistema e os dados</div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-title">Corretor Ativo</div>
+          <div class="select-corretor-grid" id="corretor-selector"></div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-title">Editar Corretor Ativo</div>
+          <div class="grid grid-2">
+            <div class="form-group">
+              <label class="form-label">Créditos iniciais</label>
+              <input class="form-input" type="number" id="cfg-credits" placeholder="Ex: 0">
+            </div>
+            <div class="form-group">
+              <label class="form-label">XP inicial</label>
+              <input class="form-input" type="number" id="cfg-xp" placeholder="Ex: 0">
+            </div>
+          </div>
+          <button class="btn btn-gold" onclick="applyConfig()">Aplicar alterações</button>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="settings-section">
+          <div class="settings-title">Simulações e Reset</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <button class="btn btn-blue" onclick="simularSemana()">🎲 Simular Semana de Teste</button>
+            <button class="btn btn-outline" onclick="resetarDados()">🗑️ Resetar Todos os Dados</button>
+          </div>
+          <div style="font-size:12px;color:var(--text-dim);margin-top:10px;">
+            A simulação gera dados realistas para os 4 corretores incluindo XP, créditos, ações e resgates pendentes.
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="card" style="background:rgba(201,162,39,0.04);border-color:rgba(201,162,39,0.15);">
+          <div class="card-title" style="margin-bottom:16px;color:var(--gold-light);">Sistema de Níveis</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px;">
+              <span>🏅 Nível 1 — Iniciante 3Ps</span><span style="color:var(--text-muted);">0 XP</span>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px;">
+              <span>⚡ Nível 2 — Executor</span><span style="color:var(--text-muted);">300 XP</span>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px;">
+              <span>🔍 Nível 3 — Prospector</span><span style="color:var(--text-muted);">800 XP</span>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px;">
+              <span>💼 Nível 4 — Consultor</span><span style="color:var(--text-muted);">1.500 XP</span>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px;">
+              <span>🎯 Nível 5 — Especialista</span><span style="color:var(--text-muted);">2.500 XP</span>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px;">
+              <span>🚀 Nível 6 — Alta Performance</span><span style="color:var(--text-muted);">4.000 XP</span>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px;">
+              <span>👑 Nível 7 — Elite 3Ps</span><span style="color:var(--text-muted);">6.000 XP</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- MODAL GENÉRICO -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal" id="modal-box">
+    <div class="modal-title" id="modal-title">Título</div>
+    <div class="modal-sub" id="modal-sub">Subtítulo</div>
+    <div id="modal-body"></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-gold" id="modal-confirm" onclick="confirmModal()">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════
+   DADOS ESTÁTICOS
+══════════════════════════════════════════════════ */
+const LEVELS = [
+  { nivel: 1, nome: 'Iniciante 3Ps', xpMin: 0,    xpMax: 300,  icone: '🏅' },
+  { nivel: 2, nome: 'Executor',       xpMin: 300,  xpMax: 800,  icone: '⚡' },
+  { nivel: 3, nome: 'Prospector',     xpMin: 800,  xpMax: 1500, icone: '🔍' },
+  { nivel: 4, nome: 'Consultor',      xpMin: 1500, xpMax: 2500, icone: '💼' },
+  { nivel: 5, nome: 'Especialista',   xpMin: 2500, xpMax: 4000, icone: '🎯' },
+  { nivel: 6, nome: 'Alta Performance',xpMin: 4000, xpMax: 6000, icone: '🚀' },
+  { nivel: 7, nome: 'Elite 3Ps',      xpMin: 6000, xpMax: Infinity, icone: '👑' },
+];
+
+const ACOES = [
+  { id: 'abordagem',     nome: 'Fiz abordagem válida',        icone: '📞', xp: 5,   creditos: 1,  limite: 50 },
+  { id: 'followup',      nome: 'Fiz follow-up registrado',    icone: '🔁', xp: 8,   creditos: 2,  limite: 30 },
+  { id: 'leadRespondeu', nome: 'Lead respondeu',              icone: '💬', xp: 10,  creditos: 3,  limite: null },
+  { id: 'qualificou',    nome: 'Qualifiquei um lead',         icone: '✅', xp: 15,  creditos: 5,  limite: null },
+  { id: 'agendou',       nome: 'Agendei reunião',             icone: '📅', xp: 30,  creditos: 10, limite: null },
+  { id: 'apresentacao',  nome: 'Fiz apresentação',            icone: '🖥️', xp: 40,  creditos: 15, limite: null },
+  { id: 'proposta',      nome: 'Enviei proposta',             icone: '📄', xp: 60,  creditos: 25, limite: null },
+  { id: 'negociacao',    nome: 'Negociação ativa',            icone: '🤝', xp: 70,  creditos: 30, limite: null },
+  { id: 'venda',         nome: 'Fechei venda',                icone: '🏆', xp: 200, creditos: 100,limite: null },
+  { id: 'estudo',        nome: 'Estudei empreendimento',      icone: '📚', xp: 20,  creditos: 10, limite: null },
+  { id: 'aprendizado',   nome: 'Compartilhei aprendizado útil',icone: '💡', xp: 25,  creditos: 20, limite: null },
+  { id: 'ajuda',         nome: 'Ajudei outro corretor',       icone: '🙌', xp: 25,  creditos: 20, limite: null },
+];
+
+const RECOMPENSAS = [
+  // Reconhecimento
+  { id: 'r1',  cat: 'reconhecimento', nome: 'Destaque no mural da equipe',    desc: 'Seu nome e conquista exibidos no mural físico e digital da equipe esta semana.',           custo: 200,  icone: '🏅' },
+  { id: 'r2',  cat: 'reconhecimento', nome: 'Certificado de execução',         desc: 'Certificado digital de Corretor da Semana, validado pela gestão.',                         custo: 300,  icone: '📜' },
+  { id: 'r3',  cat: 'reconhecimento', nome: 'Post de reconhecimento interno',  desc: 'Post de destaque nos canais internos da equipe celebrando sua performance.',               custo: 400,  icone: '📣' },
+  // Benefício
+  { id: 'r4',  cat: 'beneficio',      nome: 'Café da vitória',                 desc: 'Um café especial por conta da imobiliária. Pequeno gesto, grande reconhecimento.',         custo: 150,  icone: '☕' },
+  { id: 'r5',  cat: 'beneficio',      nome: 'Vale lanche',                     desc: 'Vale refeição leve para uso no intervalo. Seu merecido break.',                            custo: 500,  icone: '🥪' },
+  { id: 'r6',  cat: 'beneficio',      nome: 'Vale almoço',                     desc: 'Almoço por conta da empresa em restaurante parceiro.',                                      custo: 1200, icone: '🍽️' },
+  // Oportunidade
+  { id: 'r7',  cat: 'oportunidade',   nome: 'Prioridade em lead novo (1 dia)', desc: 'Você recebe o próximo lead qualificado antes dos demais, por um dia completo.',           custo: 500,  icone: '🎯' },
+  { id: 'r8',  cat: 'oportunidade',   nome: 'Escolher plantão estratégico',    desc: 'Prioridade na escolha de turno de plantão na semana de sua preferência.',                 custo: 800,  icone: '📆' },
+  { id: 'r9',  cat: 'oportunidade',   nome: 'Escolher produto para campanha',  desc: 'Você define o produto que será destaque na próxima campanha da equipe.',                  custo: 1000, icone: '🏠' },
+  { id: 'r10', cat: 'oportunidade',   nome: 'Participar de campanha premium',  desc: 'Acesso exclusivo à campanha premium do mês com leads qualificados e material diferenciado.',custo: 1500, icone: '🚀' },
+  // Desenvolvimento
+  { id: 'r11', cat: 'desenvolvimento',nome: 'Mentoria individual (30 min)',    desc: 'Sessão 1:1 com o gestor ou mentor da equipe para evolução no seu processo de vendas.',    custo: 700,  icone: '🧭' },
+  { id: 'r12', cat: 'desenvolvimento',nome: 'Revisão de atendimento',          desc: 'O gestor revisa e dá feedback detalhado sobre seu último atendimento registrado.',         custo: 900,  icone: '🔎' },
+  { id: 'r13', cat: 'desenvolvimento',nome: 'Treinamento avançado exclusivo',  desc: 'Acesso a treinamento premium ou workshop externo por conta da imobiliária.',              custo: 1500, icone: '📚' },
+  // Financeiro
+  { id: 'r14', cat: 'financeiro',     nome: 'Bônus simbólico',                 desc: 'Gratificação financeira simbólica pela disciplina e resultado da semana.',                custo: 2000, icone: '💵' },
+  { id: 'r15', cat: 'financeiro',     nome: 'Vale-presente',                   desc: 'Vale-presente em loja parceira. Você escolhe o que aproveitar.',                          custo: 3000, icone: '🎁' },
+  { id: 'r16', cat: 'financeiro',     nome: 'Premiação mensal especial',       desc: 'Reconhecimento financeiro especial para o corretor com maior execução disciplinada no mês.',custo: 5000, icone: '🏆' },
+];
+
+const CUSTO_FINANCEIRO = { r14: 150, r15: 300, r16: 800 };
+
+/* ══════════════════════════════════════════════════
+   ESTADO GLOBAL
+══════════════════════════════════════════════════ */
+let state = null;
+let currentPage = 'dashboard';
+let shopFilter = 'all';
+let rankSort = 'xp';
+let modalCallback = null;
+
+const DEFAULT_CORRETORES = [
+  { id: 'alex',    nome: 'Alex',    xp: 0, creditos: 0, creditosGanhosHoje: 0, creditosGastos: 0, acoesHoje: 0, streak: 0, historico: [], limitesHoje: {} },
+  { id: 'leide',   nome: 'Leide',   xp: 0, creditos: 0, creditosGanhosHoje: 0, creditosGastos: 0, acoesHoje: 0, streak: 0, historico: [], limitesHoje: {} },
+  { id: 'eliane',  nome: 'Eliane',  xp: 0, creditos: 0, creditosGanhosHoje: 0, creditosGastos: 0, acoesHoje: 0, streak: 0, historico: [], limitesHoje: {} },
+  { id: 'giovani', nome: 'Giovani', xp: 0, creditos: 0, creditosGanhosHoje: 0, creditosGastos: 0, acoesHoje: 0, streak: 0, historico: [], limitesHoje: {} },
+];
+
+/* ══════════════════════════════════════════════════
+   PERSISTÊNCIA
+══════════════════════════════════════════════════ */
+function loadState() {
+  try {
+    const raw = localStorage.getItem('loja3ps_v2');
+    if (raw) state = JSON.parse(raw);
+    else initDefaultState();
+  } catch(e) { initDefaultState(); }
+}
+
+function saveState() {
+  localStorage.setItem('loja3ps_v2', JSON.stringify(state));
+}
+
+function initDefaultState() {
+  state = {
+    corretorAtivoId: 'alex',
+    corretores: JSON.parse(JSON.stringify(DEFAULT_CORRETORES)),
+    solicitacoes: [],
+    dataHoje: today(),
+  };
+  saveState();
+}
+
+function today() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function checkDayReset() {
+  if (state.dataHoje !== today()) {
+    state.dataHoje = today();
+    state.corretores.forEach(c => {
+      if (c.acoesHoje > 0) c.streak = (c.streak || 0) + 1;
+      c.creditosGanhosHoje = 0;
+      c.acoesHoje = 0;
+      c.limitesHoje = {};
+    });
+    saveState();
+  }
+}
+
+/* ══════════════════════════════════════════════════
+   HELPERS
+══════════════════════════════════════════════════ */
+function getCorretor(id) {
+  return state.corretores.find(c => c.id === (id || state.corretorAtivoId));
+}
+
+function getAtivo() { return getCorretor(state.corretorAtivoId); }
+
+function getLevel(xp) {
+  for (let i = LEVELS.length - 1; i >= 0; i--) {
+    if (xp >= LEVELS[i].xpMin) return LEVELS[i];
+  }
+  return LEVELS[0];
+}
+
+function getStatusDia(acoes) {
+  if (acoes === 0) return { label: 'Em Risco',       cls: 'em-risco', emoji: '😴', desc: 'Registre ações para mudar seu status' };
+  if (acoes <= 2)  return { label: 'Aquecendo',       cls: 'aquecendo', emoji: '🔥', desc: 'Continue! Você está ganhando ritmo' };
+  if (acoes <= 5)  return { label: 'Dia Produtivo',   cls: 'produtivo', emoji: '💪', desc: 'Ótimo trabalho! Dia produtivo confirmado' };
+  if (acoes <= 8)  return { label: 'Alta Performance',cls: 'alta',      emoji: '⚡', desc: 'Impressionante! Você está em Alta Performance' };
+  return           { label: 'Elite do Dia',   cls: 'elite',     emoji: '👑', desc: 'ELITE! Performance máxima atingida hoje' };
+}
+
+function fmtDate(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  return d.toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit', year:'2-digit', hour:'2-digit', minute:'2-digit' });
+}
+
+function initials(nome) {
+  return nome.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+}
+
+function avatarColors(nome) {
+  const colors = [
+    ['#C9A227','#8B6F1A'],['#1D4ED8','#1e3a8a'],
+    ['#059669','#064e3b'],['#7C3AED','#4c1d95'],
+  ];
+  const idx = nome.charCodeAt(0) % colors.length;
+  return `background:linear-gradient(135deg,${colors[idx][0]},${colors[idx][1]});color:#fff`;
+}
+
+/* ══════════════════════════════════════════════════
+   NAVEGAÇÃO
+══════════════════════════════════════════════════ */
+const PAGE_TITLES = {
+  dashboard: ['Dashboard', 'Visão geral do seu desempenho'],
+  acoes: ['Ações do Dia', 'Registre e ganhe créditos'],
+  loja: ['Loja 3Ps', 'Resgate suas recompensas'],
+  historico: ['Histórico', 'Movimentações de créditos'],
+  ranking: ['Ranking', 'Performance da equipe'],
+  gestor: ['Painel do Gestor', 'Controle e aprovações'],
+  config: ['Configurações', 'Personalizar sistema'],
+};
+
+function navigate(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+  document.getElementById('page-' + page).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => {
+    if (n.textContent.toLowerCase().includes(PAGE_TITLES[page][0].toLowerCase().slice(0,4)))
+      n.classList.add('active');
+  });
+
+  const [title, sub] = PAGE_TITLES[page];
+  document.getElementById('topbar-title').textContent = title;
+  document.getElementById('topbar-sub').textContent = sub;
+
+  currentPage = page;
+  closeSidebar();
+  renderPage(page);
+}
+
+function renderPage(page) {
+  switch(page) {
+    case 'dashboard': renderDashboard(); break;
+    case 'acoes': renderAcoes(); break;
+    case 'loja': renderLoja(); break;
+    case 'historico': renderHistorico(); break;
+    case 'ranking': renderRanking(); break;
+    case 'gestor': renderGestor(); break;
+    case 'config': renderConfig(); break;
+  }
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebar-overlay').classList.toggle('open');
+}
+
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').classList.remove('open');
+}
+
+/* ══════════════════════════════════════════════════
+   TOPBAR UPDATE
+══════════════════════════════════════════════════ */
+function updateTopbar() {
+  const c = getAtivo();
+  document.getElementById('topbar-xp').textContent = c.xp.toLocaleString('pt-BR');
+  document.getElementById('topbar-credits').textContent = c.creditos.toLocaleString('pt-BR');
+  document.getElementById('sidebar-name').textContent = c.nome;
+  document.getElementById('sidebar-avatar').textContent = initials(c.nome);
+  document.getElementById('sidebar-avatar').style.cssText = avatarColors(c.nome);
+}
+
+/* ══════════════════════════════════════════════════
+   RENDER DASHBOARD
+══════════════════════════════════════════════════ */
+function renderDashboard() {
+  const c = getAtivo();
+  const level = getLevel(c.xp);
+  const nextLevel = LEVELS.find(l => l.nivel === level.nivel + 1);
+  const status = getStatusDia(c.acoesHoje);
+
+  // Hero
+  document.getElementById('hero-avatar').textContent = initials(c.nome);
+  document.getElementById('hero-avatar').style.cssText = avatarColors(c.nome);
+  document.getElementById('hero-name').textContent = c.nome;
+  document.getElementById('hero-level-label').textContent = `Nível ${level.nivel} — ${level.nome}`;
+  document.getElementById('hero-level-badge').textContent = `${level.icone} ${level.nome}`;
+  document.getElementById('hero-status-badge').textContent = status.label;
+  document.getElementById('hero-status-badge').className = `status-badge ${status.cls}`;
+  document.getElementById('hero-streak').textContent = `🔥 ${c.streak || 0}`;
+
+  // XP progress
+  document.getElementById('hero-xp-val').textContent = c.xp.toLocaleString('pt-BR') + ' XP';
+  if (nextLevel) {
+    const pct = Math.min(100, Math.round(((c.xp - level.xpMin) / (nextLevel.xpMin - level.xpMin)) * 100));
+    document.getElementById('xp-progress-label').textContent =
+      `${(c.xp - level.xpMin).toLocaleString('pt-BR')} / ${(nextLevel.xpMin - level.xpMin).toLocaleString('pt-BR')} XP para ${nextLevel.icone} ${nextLevel.nome}`;
+    document.getElementById('xp-progress-bar').style.width = pct + '%';
+  } else {
+    document.getElementById('xp-progress-label').textContent = '🏆 Nível máximo atingido!';
+    document.getElementById('xp-progress-bar').style.width = '100%';
+  }
+
+  // Stats
+  document.getElementById('stat-credits').textContent = c.creditos.toLocaleString('pt-BR');
+  document.getElementById('stat-ganhos-hoje').textContent = c.creditosGanhosHoje.toLocaleString('pt-BR');
+  document.getElementById('stat-gastos').textContent = c.creditosGastos.toLocaleString('pt-BR');
+  document.getElementById('stat-acoes-hoje').textContent = c.acoesHoje;
+  document.getElementById('dash-acoes-cnt').textContent = c.acoesHoje;
+
+  // Status indicator
+  document.getElementById('status-indicator').innerHTML = `
+    <div style="font-size:28px;margin-bottom:6px;">${status.emoji}</div>
+    <div style="font-size:15px;font-weight:700;" class="status-badge ${status.cls}" style="display:inline-flex;">${status.label}</div>
+    <div style="font-size:12px;color:var(--text-muted);margin-top:6px;">${status.desc}</div>
+  `;
+
+  // Last 5 activities
+  const hist = [...c.historico].reverse().slice(0, 5);
+  const listEl = document.getElementById('dash-history-list');
+  if (hist.length === 0) {
+    listEl.innerHTML = `<div class="empty-state"><div class="icon">📭</div><p>Nenhuma atividade registrada ainda.<br>Comece registrando ações do dia!</p></div>`;
+  } else {
+    listEl.innerHTML = hist.map(h => `
+      <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);">
+        <div style="font-size:22px;">${h.tipo === 'ganho' ? '📈' : '🛍️'}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${h.desc}</div>
+          <div style="font-size:11px;color:var(--text-muted);">${fmtDate(h.data)}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;">
+          <div style="font-size:13px;font-weight:700;" class="${h.creditos >= 0 ? 'amount-pos' : 'amount-neg'}">${h.creditos >= 0 ? '+' : ''}${h.creditos}</div>
+          ${h.xp ? `<div style="font-size:11px;color:var(--blue-light);">+${h.xp} XP</div>` : ''}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  updateTopbar();
+}
+
+/* ══════════════════════════════════════════════════
+   RENDER AÇÕES
+══════════════════════════════════════════════════ */
+function renderAcoes() {
+  const c = getAtivo();
+  document.getElementById('acoes-contador').textContent = c.acoesHoje;
+
+  const grid = document.getElementById('action-grid');
+  grid.innerHTML = ACOES.map(a => {
+    const count = (c.limitesHoje && c.limitesHoje[a.id]) || 0;
+    const limitado = a.limite && count >= a.limite;
+    const aviso = !a.limite && count > 5;
+    return `
+    <button class="action-btn" onclick="registrarAcao('${a.id}')" ${limitado ? 'disabled' : ''}>
+      <div class="action-btn-icon">${a.icone}</div>
+      <div class="action-btn-info">
+        <div class="action-btn-name">${a.nome}</div>
+        <div class="action-btn-meta">
+          <span class="chip xp">+${a.xp} XP</span>
+          <span class="chip credits">+${a.creditos} créditos</span>
+        </div>
+        ${a.limite ? `<div style="font-size:10px;color:${limitado ? 'var(--red-light)' : 'var(--text-dim)'};margin-top:4px;">${limitado ? '⛔ Limite diário atingido' : `${count}/${a.limite} hoje`}</div>` : ''}
+        ${aviso ? `<div style="font-size:10px;color:var(--orange-light);margin-top:4px;">⚠️ ${count} registros hoje</div>` : ''}
+      </div>
+    </button>`;
+  }).join('');
+
+  updateTopbar();
+}
+
+/* ══════════════════════════════════════════════════
+   REGISTRAR AÇÃO
+══════════════════════════════════════════════════ */
+function registrarAcao(id) {
+  const acao = ACOES.find(a => a.id === id);
+  if (!acao) return;
+
+  const c = getAtivo();
+  if (!c.limitesHoje) c.limitesHoje = {};
+  const count = c.limitesHoje[id] || 0;
+
+  if (acao.limite && count >= acao.limite) {
+    showToast('warning', '⚠️ Limite diário', `Você atingiu o limite de ${acao.limite}x por dia para esta ação.`);
+    return;
+  }
+
+  // Aviso excesso (sem limite hard)
+  const aviso = !acao.limite && count > 5;
+
+  c.xp += acao.xp;
+  c.creditos += acao.creditos;
+  c.creditosGanhosHoje += acao.creditos;
+  c.acoesHoje = (c.acoesHoje || 0) + 1;
+  c.limitesHoje[id] = count + 1;
+
+  const entrada = {
+    id: Date.now(),
+    data: new Date().toISOString(),
+    tipo: 'ganho',
+    desc: acao.nome,
+    xp: acao.xp,
+    creditos: acao.creditos,
+    saldo: c.creditos,
+    status: 'concluido',
+  };
+
+  c.historico.push(entrada);
+  saveState();
+
+  if (aviso) {
+    showToast('warning', '⚠️ Atenção', `Você já registrou "${acao.nome}" ${count + 1}x hoje. Use com responsabilidade.`);
+  } else {
+    showToast('gold', `${acao.icone} Ação registrada!`, `+${acao.xp} XP &nbsp;·&nbsp; +${acao.creditos} créditos`);
+  }
+
+  checkLevelUp(c, acao.xp);
+  renderAcoes();
+  updateTopbar();
+}
+
+function checkLevelUp(c, xpAdded) {
+  const antes = getLevel(c.xp - xpAdded);
+  const depois = getLevel(c.xp);
+  if (depois.nivel > antes.nivel) {
+    setTimeout(() => showToast('success', `🎉 Subiu de nível!`, `Você é agora ${depois.icone} ${depois.nome}!`), 600);
+  }
+}
+
+/* ══════════════════════════════════════════════════
+   RENDER LOJA
+══════════════════════════════════════════════════ */
+function renderLoja() {
+  const c = getAtivo();
+  document.getElementById('loja-credits-val').textContent = c.creditos.toLocaleString('pt-BR');
+
+  const filtered = shopFilter === 'all' ? RECOMPENSAS : RECOMPENSAS.filter(r => r.cat === shopFilter);
+
+  document.getElementById('shop-grid').innerHTML = filtered.map(r => {
+    const canBuy = c.creditos >= r.custo;
+    const needApproval = r.custo >= 1000;
+    return `
+    <div class="reward-card">
+      <div class="reward-header">
+        <span class="reward-icon">${r.icone}</span>
+        <span class="reward-cat ${r.cat}">${catLabel(r.cat)}</span>
+      </div>
+      <div class="reward-name">${r.nome}</div>
+      <div class="reward-desc">${r.desc}</div>
+      ${needApproval ? `<div style="font-size:11px;color:var(--orange-light);display:flex;align-items:center;gap:4px;"><span>⏳</span> Requer aprovação do gestor</div>` : ''}
+      <div class="reward-footer">
+        <div class="reward-cost">🪙 ${r.custo.toLocaleString('pt-BR')} <span>créditos</span></div>
+        <button class="btn btn-sm ${canBuy ? 'btn-gold' : 'btn-outline'}" onclick="resgatar('${r.id}')" ${canBuy ? '' : 'title="Créditos insuficientes"'}>
+          ${canBuy ? 'Resgatar' : '🔒 Insuficiente'}
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function catLabel(cat) {
+  const m = { reconhecimento:'Reconhecimento', beneficio:'Benefício', oportunidade:'Oportunidade', desenvolvimento:'Desenvolvimento', financeiro:'Financeiro' };
+  return m[cat] || cat;
+}
+
+function filterShop(cat, btn) {
+  shopFilter = cat;
+  document.querySelectorAll('.shop-filters .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderLoja();
+}
+
+/* ══════════════════════════════════════════════════
+   RESGATAR
+══════════════════════════════════════════════════ */
+function resgatar(id) {
+  const r = RECOMPENSAS.find(x => x.id === id);
+  if (!r) return;
+  const c = getAtivo();
+
+  if (c.creditos < r.custo) {
+    showToast('error', '🔒 Créditos insuficientes', `Você precisa de ${r.custo.toLocaleString('pt-BR')} créditos. Você tem ${c.creditos.toLocaleString('pt-BR')}.`);
+    return;
+  }
+
+  const needApproval = r.custo >= 1000;
+
+  openModal(
+    `Resgatar: ${r.nome}`,
+    needApproval
+      ? `Esta recompensa custa ${r.custo.toLocaleString('pt-BR')} créditos e requer aprovação do gestor.`
+      : `Deseja resgatar esta recompensa por ${r.custo.toLocaleString('pt-BR')} créditos?`,
+    `<div style="background:var(--bg2);border-radius:var(--radius-sm);padding:16px;text-align:center;">
+      <div style="font-size:32px;margin-bottom:8px;">${r.icone}</div>
+      <div style="font-weight:700;margin-bottom:4px;">${r.nome}</div>
+      <div style="font-size:12px;color:var(--text-muted);">${r.desc}</div>
+      <div style="margin-top:12px;color:var(--gold-light);font-weight:700;">🪙 ${r.custo.toLocaleString('pt-BR')} créditos</div>
+      ${needApproval ? `<div style="margin-top:8px;" class="pending-tag">Aguardando aprovação do gestor</div>` : ''}
+    </div>`,
+    () => confirmarResgate(id)
+  );
+}
+
+function confirmarResgate(id) {
+  const r = RECOMPENSAS.find(x => x.id === id);
+  if (!r) return;
+  const c = getAtivo();
+
+  if (c.creditos < r.custo) {
+    showToast('error', '🔒 Erro', 'Créditos insuficientes no momento do resgate.');
+    return;
+  }
+
+  const needApproval = r.custo >= 1000;
+  const status = needApproval ? 'pendente' : 'concluido';
+
+  c.creditos -= r.custo;
+  c.creditosGastos = (c.creditosGastos || 0) + r.custo;
+
+  const entrada = {
+    id: Date.now(),
+    data: new Date().toISOString(),
+    tipo: 'resgate',
+    desc: `Resgate: ${r.nome}`,
+    xp: 0,
+    creditos: -r.custo,
+    saldo: c.creditos,
+    status,
+    recompensaId: r.id,
+    recompensaNome: r.nome,
+  };
+
+  c.historico.push(entrada);
+
+  if (needApproval) {
+    state.solicitacoes.push({
+      id: Date.now(),
+      corretorId: c.id,
+      corretorNome: c.nome,
+      recompensaId: r.id,
+      recompensaNome: r.nome,
+      recompensaIcone: r.icone,
+      custo: r.custo,
+      status: 'pendente',
+      data: new Date().toISOString(),
+      historicId: entrada.id,
+    });
+    showToast('warning', '⏳ Solicitação enviada', `"${r.nome}" aguarda aprovação do gestor.`);
+  } else {
+    showToast('success', `${r.icone} Resgatado!`, `"${r.nome}" resgatada com sucesso!`);
+  }
+
+  saveState();
+  renderLoja();
+  updateTopbar();
+}
+
+/* ══════════════════════════════════════════════════
+   RENDER HISTÓRICO
+══════════════════════════════════════════════════ */
+function renderHistorico() {
+  const c = getAtivo();
+  const tbody = document.getElementById('historico-tbody');
+  const hist = [...c.historico].reverse();
+
+  if (hist.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--text-dim);padding:32px;">Nenhuma movimentação registrada</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = hist.map(h => `
+    <tr>
+      <td style="white-space:nowrap;color:var(--text-muted);">${fmtDate(h.data)}</td>
+      <td><span style="font-size:11px;padding:2px 8px;border-radius:10px;${h.tipo === 'ganho' ? 'background:rgba(16,185,129,0.1);color:var(--green-light)' : 'background:rgba(239,68,68,0.1);color:var(--red-light)'};">${h.tipo === 'ganho' ? '📈 Ganho' : '🛍️ Resgate'}</span></td>
+      <td>${h.desc}</td>
+      <td>${h.xp ? `<span class="chip xp">+${h.xp} XP</span>` : '—'}</td>
+      <td class="${h.creditos >= 0 ? 'amount-pos' : 'amount-neg'}">${h.creditos >= 0 ? '+' : ''}${h.creditos.toLocaleString('pt-BR')}</td>
+      <td style="font-weight:700;">🪙 ${h.saldo.toLocaleString('pt-BR')}</td>
+      <td>${statusTag(h.status)}</td>
+    </tr>
+  `).join('');
+}
+
+function statusTag(status) {
+  const m = {
+    concluido: '<span class="done-tag">Concluído</span>',
+    pendente: '<span class="pending-tag">Aguardando</span>',
+    aprovado: '<span class="approved-tag">Aprovado</span>',
+    recusado: '<span class="refused-tag">Recusado</span>',
+  };
+  return m[status] || status;
+}
+
+/* ══════════════════════════════════════════════════
+   RENDER RANKING
+══════════════════════════════════════════════════ */
+function renderRanking() {
+  const sorted = [...state.corretores].sort((a, b) => {
+    if (rankSort === 'xp') return b.xp - a.xp;
+    if (rankSort === 'creditos') return b.creditos - a.creditos;
+    if (rankSort === 'hoje') return (b.creditosGanhosHoje || 0) - (a.creditosGanhosHoje || 0);
+    if (rankSort === 'acoes') return (b.acoesHoje || 0) - (a.acoesHoje || 0);
+    return 0;
+  });
+
+  document.getElementById('ranking-list').innerHTML = sorted.map((c, i) => {
+    const pos = i + 1;
+    const level = getLevel(c.xp);
+    const status = getStatusDia(c.acoesHoje || 0);
+    const posClass = pos === 1 ? 'p1' : pos === 2 ? 'p2' : pos === 3 ? 'p3' : 'other';
+    const cardClass = pos === 1 ? 'top1' : pos === 2 ? 'top2' : pos === 3 ? 'top3' : '';
+    const medal = pos === 1 ? '🥇' : pos === 2 ? '🥈' : pos === 3 ? '🥉' : pos;
+
+    return `
+    <div class="rank-card ${cardClass}">
+      <div class="rank-pos ${posClass}">${medal}</div>
+      <div class="avatar" style="${avatarColors(c.nome)}">${initials(c.nome)}</div>
+      <div class="rank-info">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <div class="rank-name">${c.nome}</div>
+          ${c.id === state.corretorAtivoId ? '<span style="font-size:10px;background:rgba(201,162,39,0.15);color:var(--gold-light);border:1px solid rgba(201,162,39,0.3);border-radius:10px;padding:1px 7px;">Você</span>' : ''}
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:4px;flex-wrap:wrap;">
+          <span class="level-badge" style="font-size:10px;padding:2px 8px;">${level.icone} ${level.nome}</span>
+          <span class="status-badge ${status.cls}" style="font-size:10px;">${status.label}</span>
+        </div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-stat">
+          <div class="val" style="color:var(--blue-light);">${c.xp.toLocaleString('pt-BR')}</div>
+          <div class="lbl">XP Total</div>
+        </div>
+        <div class="rank-stat">
+          <div class="val" style="color:var(--gold-light);">${c.creditos.toLocaleString('pt-BR')}</div>
+          <div class="lbl">Créditos</div>
+        </div>
+        <div class="rank-stat">
+          <div class="val" style="color:var(--green-light);">${(c.creditosGanhosHoje || 0).toLocaleString('pt-BR')}</div>
+          <div class="lbl">Ganhos Hoje</div>
+        </div>
+        <div class="rank-stat">
+          <div class="val">${c.acoesHoje || 0}</div>
+          <div class="lbl">Ações Hoje</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function sortRanking(by, btn) {
+  rankSort = by;
+  document.querySelectorAll('.rank-sort .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderRanking();
+}
+
+/* ══════════════════════════════════════════════════
+   RENDER GESTOR
+══════════════════════════════════════════════════ */
+function renderGestor() {
+  const cs = state.corretores;
+
+  const gerados = cs.reduce((s, c) => s + c.historico.filter(h => h.tipo === 'ganho').reduce((a, h) => a + h.creditos, 0), 0);
+  const gastos = cs.reduce((s, c) => s + (c.creditosGastos || 0), 0);
+  const resgates = cs.reduce((s, c) => s + c.historico.filter(h => h.tipo === 'resgate').length, 0);
+  const pendentes = state.solicitacoes.filter(s => s.status === 'pendente').length;
+
+  const custFin = state.solicitacoes
+    .filter(s => s.status !== 'recusado' && CUSTO_FINANCEIRO[s.recompensaId])
+    .reduce((acc, s) => acc + (CUSTO_FINANCEIRO[s.recompensaId] || 0), 0);
+
+  document.getElementById('g-gerados').textContent = gerados.toLocaleString('pt-BR');
+  document.getElementById('g-gastos').textContent = gastos.toLocaleString('pt-BR');
+  document.getElementById('g-resgates').textContent = resgates;
+  document.getElementById('g-pendentes').textContent = pendentes;
+  document.getElementById('g-custo').textContent = 'R$ ' + custFin.toLocaleString('pt-BR');
+
+  const topCredits = [...cs].sort((a, b) => b.creditos - a.creditos)[0];
+  const topAcoes = [...cs].sort((a, b) => (b.acoesHoje || 0) - (a.acoesHoje || 0))[0];
+  const topXp = [...cs].sort((a, b) => b.xp - a.xp)[0];
+
+  document.getElementById('g-top-credits').textContent = `${topCredits.nome} (${topCredits.creditos.toLocaleString('pt-BR')})`;
+  document.getElementById('g-top-acoes').textContent = `${topAcoes.nome} (${topAcoes.acoesHoje || 0} ações)`;
+  document.getElementById('g-top-xp').textContent = `${topXp.nome} (${topXp.xp.toLocaleString('pt-BR')} XP)`;
+
+  // Solicitações
+  const pend = state.solicitacoes.filter(s => s.status === 'pendente');
+  const listEl = document.getElementById('solicitacoes-list');
+
+  if (pend.length === 0) {
+    listEl.innerHTML = `<div class="empty-state"><div class="icon">✅</div><p>Nenhuma solicitação pendente</p></div>`;
+  } else {
+    listEl.innerHTML = pend.map(s => `
+      <div class="request-item">
+        <div style="font-size:28px;">${s.recompensaIcone}</div>
+        <div class="request-info">
+          <div class="request-name">${s.recompensaNome}</div>
+          <div class="request-meta">${s.corretorNome} · 🪙 ${s.custo.toLocaleString('pt-BR')} créditos · ${fmtDate(s.data)}</div>
+        </div>
+        <span class="pending-tag">Pendente</span>
+        <div class="request-actions">
+          <button class="btn btn-sm btn-green" onclick="aprovarSolicitacao(${s.id})">✓ Aprovar</button>
+          <button class="btn btn-sm btn-red" onclick="recusarSolicitacao(${s.id})">✗ Recusar</button>
+        </div>
+      </div>
+    `).join('');
+  }
+}
+
+function aprovarSolicitacao(id) {
+  const sol = state.solicitacoes.find(s => s.id === id);
+  if (!sol || sol.status !== 'pendente') return;
+  sol.status = 'aprovado';
+
+  const c = getCorretor(sol.corretorId);
+  const h = c.historico.find(x => x.id === sol.historicId);
+  if (h) h.status = 'aprovado';
+
+  saveState();
+  showToast('success', '✅ Aprovado', `Resgate de "${sol.recompensaNome}" aprovado para ${sol.corretorNome}.`);
+  renderGestor();
+}
+
+function recusarSolicitacao(id) {
+  const sol = state.solicitacoes.find(s => s.id === id);
+  if (!sol || sol.status !== 'pendente') return;
+  sol.status = 'recusado';
+
+  const c = getCorretor(sol.corretorId);
+  // Devolver créditos
+  c.creditos += sol.custo;
+  c.creditosGastos = Math.max(0, (c.creditosGastos || 0) - sol.custo);
+
+  const h = c.historico.find(x => x.id === sol.historicId);
+  if (h) h.status = 'recusado';
+
+  c.historico.push({
+    id: Date.now(),
+    data: new Date().toISOString(),
+    tipo: 'ganho',
+    desc: `Estorno: ${sol.recompensaNome} (recusado)`,
+    xp: 0,
+    creditos: sol.custo,
+    saldo: c.creditos,
+    status: 'concluido',
+  });
+
+  saveState();
+  showToast('warning', '❌ Recusado', `Resgate recusado. ${sol.custo.toLocaleString('pt-BR')} créditos devolvidos para ${sol.corretorNome}.`);
+  renderGestor();
+  updateTopbar();
+}
+
+/* ══════════════════════════════════════════════════
+   RENDER CONFIG
+══════════════════════════════════════════════════ */
+function renderConfig() {
+  const selector = document.getElementById('corretor-selector');
+  selector.innerHTML = state.corretores.map(c => {
+    const level = getLevel(c.xp);
+    const isAtivo = c.id === state.corretorAtivoId;
+    return `
+    <div class="corretor-select-card ${isAtivo ? 'active' : ''}" onclick="setCorretorAtivo('${c.id}')">
+      <div class="avatar" style="${avatarColors(c.nome)}">${initials(c.nome)}</div>
+      <div class="cname">${c.nome}</div>
+      <div class="clevel">${level.icone} ${level.nome}</div>
+      ${isAtivo ? '<div style="font-size:10px;color:var(--gold-light);margin-top:4px;">● Ativo</div>' : ''}
+    </div>`;
+  }).join('');
+
+  const c = getAtivo();
+  document.getElementById('cfg-credits').value = c.creditos;
+  document.getElementById('cfg-xp').value = c.xp;
+}
+
+function setCorretorAtivo(id) {
+  state.corretorAtivoId = id;
+  saveState();
+  updateTopbar();
+  renderConfig();
+  showToast('info', '👤 Corretor alterado', `Agora você está vendo o perfil de ${getAtivo().nome}.`);
+}
+
+function applyConfig() {
+  const c = getAtivo();
+  const newCredits = parseInt(document.getElementById('cfg-credits').value) || 0;
+  const newXp = parseInt(document.getElementById('cfg-xp').value) || 0;
+  c.creditos = Math.max(0, newCredits);
+  c.xp = Math.max(0, newXp);
+  saveState();
+  updateTopbar();
+  showToast('success', '✅ Salvo', 'Dados do corretor atualizados.');
+}
+
+function resetarDados() {
+  openModal(
+    '⚠️ Resetar todos os dados',
+    'Esta ação é irreversível. Todos os dados de todos os corretores serão apagados.',
+    `<div style="background:rgba(220,38,38,0.1);border:1px solid rgba(220,38,38,0.3);border-radius:var(--radius-sm);padding:14px;font-size:13px;color:var(--red-light);">
+      Todos os créditos, XP, histórico, resgates e solicitações serão removidos permanentemente.
+    </div>`,
+    () => {
+      initDefaultState();
+      loadState();
+      updateTopbar();
+      renderConfig();
+      showToast('info', '🗑️ Dados resetados', 'O sistema foi limpo com sucesso.');
+    }
+  );
+}
+
+/* ══════════════════════════════════════════════════
+   SIMULAR SEMANA
+══════════════════════════════════════════════════ */
+function simularSemana() {
+  openModal(
+    '🎲 Simular Semana de Teste',
+    'Gera dados realistas para os 4 corretores: XP, créditos, ações e solicitações pendentes.',
+    `<div style="font-size:13px;color:var(--text-muted);line-height:1.6;">
+      Serão gerados:<br>
+      ✦ Dados de performance distintos por corretor<br>
+      ✦ Histórico de ações variado<br>
+      ✦ Créditos e XP acumulados<br>
+      ✦ Pelo menos 2 solicitações aguardando aprovação<br><br>
+      <strong style="color:var(--orange-light);">Atenção: dados atuais serão substituídos.</strong>
+    </div>`,
+    () => executarSimulacao()
+  );
+}
+
+function executarSimulacao() {
+  // Reset
+  state.corretores = JSON.parse(JSON.stringify(DEFAULT_CORRETORES));
+  state.solicitacoes = [];
+
+  const cenarios = [
+    { id: 'alex',    xp: 3840, creditos: 1250, creditosGanhosHoje: 320, creditosGastos: 800, acoesHoje: 8, streak: 5 },
+    { id: 'leide',   xp: 2200, creditos: 780,  creditosGanhosHoje: 155, creditosGastos: 420, acoesHoje: 5, streak: 3 },
+    { id: 'eliane',  xp: 4600, creditos: 2100, creditosGanhosHoje: 480, creditosGastos: 1500,acoesHoje: 11,streak: 7 },
+    { id: 'giovani', xp: 980,  creditos: 310,  creditosGanhosHoje: 80,  creditosGastos: 190, acoesHoje: 3, streak: 1 },
+  ];
+
+  cenarios.forEach(cen => {
+    const c = getCorretor(cen.id);
+    c.xp = cen.xp;
+    c.creditos = cen.creditos;
+    c.creditosGanhosHoje = cen.creditosGanhosHoje;
+    c.creditosGastos = cen.creditosGastos;
+    c.acoesHoje = cen.acoesHoje;
+    c.streak = cen.streak;
+    c.limitesHoje = {};
+
+    // Histórico simulado
+    const agora = new Date();
+    const hist = [];
+    let saldo = 0;
+
+    const addEntry = (dias, acao, xp, cr) => {
+      const d = new Date(agora);
+      d.setDate(d.getDate() - dias);
+      saldo += cr;
+      hist.push({ id: d.getTime() + Math.random(), data: d.toISOString(), tipo: cr > 0 ? 'ganho' : 'resgate', desc: acao, xp: xp > 0 ? xp : 0, creditos: cr, saldo, status: 'concluido' });
+    };
+
+    // Ações da semana
+    addEntry(6, 'Fiz abordagem válida', 5, 1);
+    addEntry(6, 'Fiz follow-up registrado', 8, 2);
+    addEntry(5, 'Qualifiquei um lead', 15, 5);
+    addEntry(5, 'Agendei reunião', 30, 10);
+    addEntry(4, 'Fiz apresentação', 40, 15);
+    addEntry(4, 'Enviei proposta', 60, 25);
+    addEntry(3, 'Negociação ativa', 70, 30);
+    if (cen.xp > 3000) addEntry(2, 'Fechei venda', 200, 100);
+    addEntry(2, 'Estudei empreendimento', 20, 10);
+    addEntry(1, 'Compartilhei aprendizado útil', 25, 20);
+    addEntry(0, 'Fiz abordagem válida', 5, 1);
+    addEntry(0, 'Lead respondeu', 10, 3);
+
+    c.historico = hist;
+  });
+
+  // Resgates simples
+  const eliane = getCorretor('eliane');
+  addResgate(eliane, 'r4', 150);
+  addResgate(eliane, 'r5', 500);
+
+  const alex = getCorretor('alex');
+  addResgate(alex, 'r1', 200);
+
+  // Solicitações pendentes (custo >= 1000)
+  criarSolicitacaoPendente('eliane', 'r9');  // 1000 créditos
+  criarSolicitacaoPendente('alex', 'r11');   // 700 — abaixo de 1000, usar r6
+  criarSolicitacaoPendente('eliane', 'r10'); // 1500 créditos
+
+  saveState();
+  updateTopbar();
+  renderConfig();
+  navigate('dashboard');
+  showToast('success', '🎲 Simulação concluída!', 'Dados de teste carregados com sucesso.');
+}
+
+function addResgate(c, rid, custo) {
+  c.creditos -= custo;
+  c.creditosGastos = (c.creditosGastos || 0) + custo;
+  const r = RECOMPENSAS.find(x => x.id === rid);
+  c.historico.push({
+    id: Date.now() + Math.random(),
+    data: new Date(Date.now() - 86400000 * 2).toISOString(),
+    tipo: 'resgate', desc: `Resgate: ${r ? r.nome : rid}`,
+    xp: 0, creditos: -custo, saldo: c.creditos, status: 'concluido',
+    recompensaId: rid,
+  });
+}
+
+function criarSolicitacaoPendente(cid, rid) {
+  const c = getCorretor(cid);
+  const r = RECOMPENSAS.find(x => x.id === rid);
+  if (!r || c.creditos < r.custo) return;
+
+  c.creditos -= r.custo;
+  c.creditosGastos = (c.creditosGastos || 0) + r.custo;
+
+  const hId = Date.now() + Math.random();
+  c.historico.push({
+    id: hId,
+    data: new Date().toISOString(),
+    tipo: 'resgate', desc: `Resgate: ${r.nome}`,
+    xp: 0, creditos: -r.custo, saldo: c.creditos, status: 'pendente',
+    recompensaId: r.id,
+  });
+
+  state.solicitacoes.push({
+    id: Date.now() + Math.random(),
+    corretorId: c.id, corretorNome: c.nome,
+    recompensaId: r.id, recompensaNome: r.nome, recompensaIcone: r.icone,
+    custo: r.custo, status: 'pendente',
+    data: new Date().toISOString(),
+    historicId: hId,
+  });
+}
+
+/* ══════════════════════════════════════════════════
+   TOAST
+══════════════════════════════════════════════════ */
+function showToast(type, title, msg) {
+  const icons = { success:'✅', warning:'⚠️', error:'❌', info:'ℹ️', gold:'🪙' };
+  const container = document.getElementById('toast-container');
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.innerHTML = `
+    <div class="toast-icon">${icons[type] || '📌'}</div>
+    <div class="toast-content">
+      <div class="toast-title">${title}</div>
+      <div class="toast-msg">${msg}</div>
+    </div>
+  `;
+  container.appendChild(el);
+  setTimeout(() => {
+    el.classList.add('out');
+    setTimeout(() => el.remove(), 300);
+  }, 3500);
+}
+
+/* ══════════════════════════════════════════════════
+   MODAL
+══════════════════════════════════════════════════ */
+function openModal(title, sub, body, cb) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-sub').textContent = sub;
+  document.getElementById('modal-body').innerHTML = body;
+  document.getElementById('modal-overlay').classList.add('open');
+  modalCallback = cb;
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  modalCallback = null;
+}
+
+function confirmModal() {
+  closeModal();
+  if (modalCallback) modalCallback();
+}
+
+document.getElementById('modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+/* ══════════════════════════════════════════════════
+   INIT
+══════════════════════════════════════════════════ */
+loadState();
+checkDayReset();
+updateTopbar();
+renderPage('dashboard');
+
+// Marcar nav item correto
+document.querySelectorAll('.nav-item')[0].classList.add('active');
+</script>
+</body>
+</html>
