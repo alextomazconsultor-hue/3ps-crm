@@ -11,10 +11,7 @@
 // Ativo quando supabase-config.js ainda tem
 // os placeholders ou não está carregado.
 // =============================================
-const DEMO_MODE = (
-  typeof SUPABASE_URL === 'undefined' ||
-  SUPABASE_URL === 'COLE_AQUI_SUA_SUPABASE_URL'
-);
+const DEMO_MODE = (supabase === null);
 
 // Chaves localStorage usadas no modo demo
 const KEY_LOGGED = '3ps_loggedIn';
@@ -634,9 +631,71 @@ function renderSidebar(mod, currentLessonId) {
 }
 
 // =============================================
+// TELA DE CONFIGURAÇÃO SUPABASE
+// =============================================
+function initSetupScreen() {
+  // Formulário de configuração
+  document.getElementById('form-setup').addEventListener('submit', e => {
+    e.preventDefault();
+    const url = document.getElementById('setup-url').value.trim();
+    const key = document.getElementById('setup-key').value.trim();
+    const err = document.getElementById('setup-error');
+
+    if (!url.startsWith('https://') || key.length < 20) {
+      err.textContent = 'Preencha os dois campos corretamente.';
+      err.classList.remove('hidden');
+      return;
+    }
+    err.classList.add('hidden');
+
+    // Salvar no localStorage e recarregar a página
+    // O supabase-config.js vai ler as credenciais salvas
+    localStorage.setItem('3ps_sb_url', url);
+    localStorage.setItem('3ps_sb_key', key);
+    showToast('Configuração salva! Recarregando...');
+    setTimeout(() => location.reload(), 1200);
+  });
+
+  // Botão "Usar modo demo"
+  document.getElementById('btn-use-demo').addEventListener('click', () => {
+    // Marcar explicitamente que o usuário escolheu modo demo
+    localStorage.setItem('3ps_demo_choice', '1');
+    document.getElementById('screen-setup').classList.remove('active');
+    document.getElementById('screen-login').classList.add('active');
+  });
+}
+
+// =============================================
 // INIT
 // =============================================
 function init() {
+  // --- Tela de setup ---
+  initSetupScreen();
+
+  // Verificar se deve mostrar setup ou login
+  const hasSavedCreds = localStorage.getItem('3ps_sb_url');
+  const choseDemo     = localStorage.getItem('3ps_demo_choice');
+
+  if (DEMO_MODE && !hasSavedCreds && !choseDemo) {
+    // Primeira visita sem credenciais: mostrar tela de configuração
+    document.getElementById('screen-login').classList.remove('active');
+    document.getElementById('screen-setup').classList.add('active');
+  } else {
+    // Já configurado ou modo demo escolhido: ir para login
+    document.getElementById('screen-login').classList.add('active');
+    document.getElementById('screen-setup').classList.remove('active');
+
+    // Mostrar botão de reconfigurar (só no modo demo)
+    if (DEMO_MODE) {
+      const btnSetup = document.getElementById('btn-open-setup');
+      btnSetup.style.display = '';
+      btnSetup.addEventListener('click', () => {
+        document.getElementById('screen-login').classList.remove('active');
+        document.getElementById('screen-setup').classList.add('active');
+      });
+    }
+  }
+
   initAuth();
 
   document.getElementById('btn-logout').addEventListener('click', logout);
@@ -650,12 +709,12 @@ function init() {
     a.addEventListener('click', e => { e.preventDefault(); showScreen(a.dataset.screen); });
   });
 
-  // Voltar para módulos (tela de detalhe)
+  // Voltar para módulos
   document.getElementById('btn-back-modules').addEventListener('click', () => {
     showScreen('modules');
   });
 
-  // Voltar para módulo (tela de aula) — re-renderiza para refletir progresso
+  // Voltar para módulo — re-renderiza para refletir progresso
   document.getElementById('btn-back-module').addEventListener('click', () => {
     document.getElementById('lesson-iframe').src = '';
     if (STATE.currentModuleId) showModuleDetail(STATE.currentModuleId);

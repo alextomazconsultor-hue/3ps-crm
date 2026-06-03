@@ -8,8 +8,40 @@
 </head>
 <body>
 
+  <!-- ===== TELA: CONFIGURAR SUPABASE ===== -->
+  <div id="screen-setup" class="screen">
+    <div class="login-wrap">
+      <div class="login-logo">
+        <span class="logo-text">Método <span class="gold">3Ps</span></span>
+        <p class="login-tagline">Configuração do banco de dados</p>
+      </div>
+
+      <div class="setup-info">
+        <p class="setup-info-title">⚙️ Conectar ao Supabase</p>
+        <p class="setup-info-text">Cole abaixo as credenciais do seu projeto Supabase. Você as encontra em:<br>
+        <strong>Supabase → Project Settings → API</strong></p>
+      </div>
+
+      <form id="form-setup" class="login-form" novalidate>
+        <div class="field-group">
+          <label for="setup-url">Project URL</label>
+          <input id="setup-url" type="url" placeholder="https://xxxx.supabase.co" autocomplete="off" />
+        </div>
+        <div class="field-group">
+          <label for="setup-key">Anon / Public Key</label>
+          <input id="setup-key" type="text" placeholder="eyJhbGciOiJIUzI1NiIs..." autocomplete="off" />
+        </div>
+        <p id="setup-error" class="login-error hidden">Preencha os dois campos corretamente.</p>
+        <button type="submit" class="btn btn-primary btn-full">Salvar e conectar</button>
+        <button type="button" id="btn-use-demo" class="btn btn-ghost btn-full">Usar modo demo (sem Supabase)</button>
+      </form>
+
+      <p class="login-note">As credenciais ficam salvas no seu navegador.</p>
+    </div>
+  </div>
+
   <!-- ===== TELA: LOGIN ===== -->
-  <div id="screen-login" class="screen active">
+  <div id="screen-login" class="screen">
     <div class="login-wrap">
       <div class="login-logo">
         <span class="logo-text">Método <span class="gold">3Ps</span></span>
@@ -32,6 +64,7 @@
         <button type="submit" class="btn btn-primary btn-full">Entrar na plataforma</button>
       </form>
       <p class="login-note">Acesso exclusivo para alunos do Método 3Ps.</p>
+      <button id="btn-open-setup" class="demo-badge" style="display:none">⚙️ Configurar Supabase</button>
     </div>
   </div>
 

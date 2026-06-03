@@ -185,6 +185,47 @@ input { font: inherit; }
 }
 
 /* =============================================
+   SETUP SUPABASE
+============================================= */
+.setup-info {
+  background: var(--gold-dim);
+  border: 1px solid rgba(212,175,55,0.3);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.setup-info-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gold);
+}
+.setup-info-text {
+  font-size: 13px;
+  color: var(--gray);
+  line-height: 1.6;
+}
+.setup-info-text strong { color: var(--white); }
+
+/* Badge "modo demo ativo" na tela de login */
+.demo-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--gray-dim);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 99px;
+  padding: 5px 12px;
+  font-size: 12px;
+  color: var(--gray);
+  margin: 0 auto;
+  cursor: pointer;
+  transition: border-color var(--transition), color var(--transition);
+}
+.demo-badge:hover { border-color: var(--gold); color: var(--gold); }
+
+/* =============================================
    APP SHELL
 ============================================= */
 #app-shell {
