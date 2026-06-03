@@ -15,38 +15,18 @@
         <span class="logo-text">Método <span class="gold">3Ps</span></span>
         <p class="login-tagline">Posicionamento · Prospecção · Performance</p>
       </div>
-
-      <!-- MODO DEMO -->
-      <div id="login-demo-block">
-        <form id="form-demo" class="login-form" novalidate>
-          <div class="field-group">
-            <label for="demo-name">Seu nome</label>
-            <input id="demo-name" type="text" placeholder="Como você quer ser chamado?" autocomplete="name" />
-          </div>
-          <p id="demo-error" class="login-error hidden">Digite seu nome para continuar.</p>
-          <button type="submit" class="btn btn-primary btn-full">Entrar no modo demo</button>
-        </form>
-        <div class="login-divider"><span>ou</span></div>
-        <button id="btn-show-supabase" class="btn btn-ghost btn-full">🔗 Entrar com Supabase</button>
-      </div>
-
-      <!-- MODO SUPABASE (oculto por padrão) -->
-      <div id="login-supabase-block" style="display:none">
-        <form id="form-login" class="login-form" novalidate>
-          <div class="field-group">
-            <label for="input-email">E-mail</label>
-            <input id="input-email" type="email" placeholder="seu@email.com" autocomplete="email" />
-          </div>
-          <div class="field-group">
-            <label for="input-pass">Senha</label>
-            <input id="input-pass" type="password" placeholder="Sua senha" autocomplete="current-password" />
-          </div>
-          <p id="login-error" class="login-error hidden"></p>
-          <button type="submit" class="btn btn-primary btn-full">Entrar na plataforma</button>
-        </form>
-        <button id="btn-show-demo" class="btn btn-ghost btn-full" style="margin-top:8px">← Voltar ao modo demo</button>
-      </div>
-
+      <form id="form-login" class="login-form" novalidate>
+        <div class="field-group">
+          <label for="input-email">E-mail</label>
+          <input id="input-email" type="email" placeholder="seu@email.com" autocomplete="email" />
+        </div>
+        <div class="field-group">
+          <label for="input-pass">Senha</label>
+          <input id="input-pass" type="password" placeholder="Sua senha" autocomplete="current-password" />
+        </div>
+        <p id="login-error" class="login-error hidden"></p>
+        <button type="submit" class="btn btn-primary btn-full">Entrar na plataforma</button>
+      </form>
       <p class="login-note">Acesso exclusivo para alunos do Método 3Ps.</p>
     </div>
   </div>
@@ -64,7 +44,6 @@
         <li><a href="#" class="nav-link" data-screen="modules">Módulos</a></li>
         <li><a href="#" class="nav-link" data-screen="materials">Materiais</a></li>
         <li><a href="#" class="nav-link" data-screen="community">Comunidade</a></li>
-        <li><a href="#" class="nav-link" data-screen="config">⚙️ Configurações</a></li>
       </ul>
       <button id="btn-logout" class="btn btn-ghost btn-sm">Sair</button>
     </nav>
@@ -76,8 +55,10 @@
       <div id="screen-dashboard" class="screen">
         <div class="page-scroll">
           <div class="page-header">
-            <h1 id="dash-greeting" class="page-title"></h1>
-            <p class="page-subtitle">A direção certa vale mais do que a velocidade.</p>
+            <div>
+              <h1 id="dash-greeting" class="page-title"></h1>
+              <p class="page-subtitle">A direção certa vale mais do que a velocidade.</p>
+            </div>
           </div>
           <div class="stats-grid" id="dash-stats"></div>
           <section class="section">
@@ -129,9 +110,13 @@
           <div class="lesson-main">
             <button class="btn-back" id="btn-back-module">← Voltar para o módulo</button>
             <div class="player-wrap">
-              <iframe id="lesson-iframe" src="" frameborder="0"
+              <iframe
+                id="lesson-iframe"
+                src=""
+                frameborder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen></iframe>
+                allowfullscreen
+              ></iframe>
             </div>
             <div class="lesson-info">
               <h2 id="lesson-title" class="lesson-title"></h2>
@@ -209,8 +194,11 @@
             <p class="community-card-desc">
               Participe da nossa comunidade no WhatsApp com corretores de todo o Brasil.
               Troque experiências, tire dúvidas e acompanhe as lives em tempo real.
+              Um espaço criado para quem quer crescer de verdade no mercado imobiliário digital.
             </p>
-            <a href="#" class="btn btn-primary" onclick="showToast('Link do grupo em breve!')">Acessar grupo no WhatsApp</a>
+            <a href="#" class="btn btn-primary" onclick="showToast('Link do grupo em breve!')">
+              Acessar grupo no WhatsApp
+            </a>
           </div>
           <section class="section">
             <h2 class="section-title">Por que participar?</h2>
@@ -235,51 +223,6 @@
         </div>
       </div>
 
-      <!-- TELA: CONFIGURAÇÕES SUPABASE -->
-      <div id="screen-config" class="screen">
-        <div class="page-scroll">
-          <div class="page-header">
-            <h1 class="page-title">⚙️ Configurações</h1>
-            <p class="page-subtitle">Conecte a plataforma ao Supabase para login e progresso reais.</p>
-          </div>
-
-          <!-- Status atual -->
-          <div id="config-status" class="config-status-card"></div>
-
-          <!-- Formulário Supabase -->
-          <div class="config-card">
-            <h2 class="config-card-title">Credenciais do Supabase</h2>
-            <p class="config-card-desc">
-              Encontre esses dados em: <strong>supabase.com → seu projeto → Project Settings → API</strong>
-            </p>
-            <form id="form-config" novalidate>
-              <div class="field-group" style="margin-bottom:16px">
-                <label for="config-url">Project URL</label>
-                <input id="config-url" type="url" placeholder="https://xxxx.supabase.co" autocomplete="off" />
-              </div>
-              <div class="field-group" style="margin-bottom:16px">
-                <label for="config-key">Anon / Public Key</label>
-                <input id="config-key" type="text" placeholder="eyJhbGciOiJIUzI1NiIs..." autocomplete="off" />
-              </div>
-              <p id="config-error" class="login-error hidden" style="margin-bottom:12px"></p>
-              <div style="display:flex;gap:12px;flex-wrap:wrap">
-                <button type="submit" class="btn btn-primary">Salvar e reconectar</button>
-                <button type="button" id="btn-clear-supabase" class="btn btn-ghost">Remover e usar demo</button>
-              </div>
-            </form>
-          </div>
-
-          <!-- Instruções -->
-          <div class="config-card" style="margin-top:16px">
-            <h2 class="config-card-title">Como criar as tabelas no Supabase</h2>
-            <p class="config-card-desc">Copie o SQL abaixo e cole no <strong>SQL Editor</strong> do seu projeto Supabase.</p>
-            <div class="sql-block" id="sql-instructions"></div>
-            <button class="btn btn-ghost btn-sm" style="margin-top:12px" onclick="copiarSQL()">📋 Copiar SQL</button>
-          </div>
-
-        </div>
-      </div>
-
     </main>
 
     <!-- BARRA DE NAVEGAÇÃO MOBILE -->
@@ -296,9 +239,9 @@
         <span class="bottom-nav-icon">📁</span>
         <span class="bottom-nav-label">Materiais</span>
       </a>
-      <a href="#" class="bottom-nav-item" data-screen="config">
-        <span class="bottom-nav-icon">⚙️</span>
-        <span class="bottom-nav-label">Config</span>
+      <a href="#" class="bottom-nav-item" data-screen="community">
+        <span class="bottom-nav-icon">👥</span>
+        <span class="bottom-nav-label">Comunidade</span>
       </a>
     </nav>
 
