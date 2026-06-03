@@ -1,17 +1,36 @@
 /* =============================================
    MÉTODO 3PS — LÓGICA DA PLATAFORMA
    Autenticação e progresso via Supabase.
+   Quando Supabase não está configurado, opera
+   em MODO DEMO com login fake e localStorage.
    Módulos e aulas continuam em data.js.
 ============================================= */
 
 // =============================================
-// ESTADO GLOBAL EM MEMÓRIA
-// Carregado do Supabase ao entrar no app.
+// MODO DEMO
+// Ativo quando supabase-config.js ainda tem
+// os placeholders ou não está carregado.
 // =============================================
-let CURRENT_USER      = null;  // objeto do supabase.auth.getUser()
-let CURRENT_PROFILE   = null;  // linha da tabela profiles
-let COMPLETED_LESSONS = [];    // array de lesson_id strings
-let LAST_LESSON       = null;  // { moduleId, lessonId } ou null
+const DEMO_MODE = (
+  typeof SUPABASE_URL === 'undefined' ||
+  SUPABASE_URL === 'COLE_AQUI_SUA_SUPABASE_URL'
+);
+
+// Chaves localStorage usadas no modo demo
+const KEY_LOGGED = '3ps_loggedIn';
+const KEY_NAME   = '3ps_name';
+const KEY_DONE   = '3ps_completed';
+const KEY_LAST   = '3ps_last';
+
+// =============================================
+// ESTADO GLOBAL EM MEMÓRIA
+// No modo Supabase: carregado do banco.
+// No modo demo: carregado do localStorage.
+// =============================================
+let CURRENT_USER      = null;
+let CURRENT_PROFILE   = null;
+let COMPLETED_LESSONS = [];
+let LAST_LESSON       = null;
 
 const STATE = {
   currentScreen:   'dashboard',
@@ -88,10 +107,58 @@ function showLesson(moduleId, lessonId) {
 }
 
 // =============================================
-// LOGIN — usa Supabase Auth
+// LOGIN
+// Modo demo: qualquer e-mail + senha (≥3 chars)
+// Modo Supabase: supabase.auth.signInWithPassword
 // =============================================
 async function initAuth() {
-  // Verificar se já existe sessão ativa
+  if (DEMO_MODE) {
+    initAuthDemo();
+  } else {
+    await initAuthSupabase();
+  }
+}
+
+// ---- LOGIN DEMO (localStorage) ----
+function initAuthDemo() {
+  // Mostrar campo nome (oculto no modo Supabase)
+  document.getElementById('field-name').style.display = '';
+
+  if (localStorage.getItem(KEY_LOGGED)) {
+    COMPLETED_LESSONS = JSON.parse(localStorage.getItem(KEY_DONE) || '[]');
+    LAST_LESSON       = JSON.parse(localStorage.getItem(KEY_LAST) || 'null');
+    CURRENT_PROFILE   = { nome: localStorage.getItem(KEY_NAME) || 'Aluno' };
+    enterApp();
+    return;
+  }
+
+  document.getElementById('form-login').addEventListener('submit', e => {
+    e.preventDefault();
+    const email = document.getElementById('input-email').value.trim();
+    const name  = document.getElementById('input-name').value.trim();
+    const pass  = document.getElementById('input-pass').value.trim();
+    const err   = document.getElementById('login-error');
+
+    if (email.length < 3 || name.length < 1 || pass.length < 3) {
+      err.textContent = 'Preencha todos os campos (mínimo 3 caracteres).';
+      err.classList.remove('hidden');
+      return;
+    }
+    err.classList.add('hidden');
+    localStorage.setItem(KEY_LOGGED, '1');
+    localStorage.setItem(KEY_NAME, name);
+    CURRENT_PROFILE = { nome: name };
+    COMPLETED_LESSONS = [];
+    LAST_LESSON = null;
+    enterApp();
+  });
+}
+
+// ---- LOGIN SUPABASE ----
+async function initAuthSupabase() {
+  // Ocultar campo nome (Supabase pega do metadata)
+  document.getElementById('field-name').style.display = 'none';
+
   const { data: { session } } = await supabase.auth.getSession();
   if (session) {
     await loadUserData(session.user);
@@ -99,7 +166,6 @@ async function initAuth() {
     return;
   }
 
-  // Listener: sessão muda (login/logout externo, token refresh)
   supabase.auth.onAuthStateChange(async (event, session) => {
     if (event === 'SIGNED_IN' && session) {
       await loadUserData(session.user);
@@ -112,7 +178,6 @@ async function initAuth() {
     }
   });
 
-  // Submissão do formulário de login
   document.getElementById('form-login').addEventListener('submit', async e => {
     e.preventDefault();
     const email = document.getElementById('input-email').value.trim();
@@ -129,8 +194,7 @@ async function initAuth() {
     btnSubmit.textContent = 'Entrando...';
     btnSubmit.disabled = true;
 
-    // ---- CHAMADA SUPABASE AUTH ----
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass });
+    const { error } = await supabase.auth.signInWithPassword({ email, password: pass });
 
     btnSubmit.textContent = 'Entrar na plataforma';
     btnSubmit.disabled = false;
@@ -140,9 +204,7 @@ async function initAuth() {
       err.classList.remove('hidden');
       return;
     }
-
     err.classList.add('hidden');
-    // onAuthStateChange vai capturar o SIGNED_IN e chamar enterApp()
   });
 }
 
@@ -203,10 +265,13 @@ async function loadProgress() {
 }
 
 // =============================================
-// SALVAR PROGRESSO — marca aula como concluída no Supabase
+// SALVAR PROGRESSO
 // =============================================
 async function saveProgress(lessonId) {
-  // Upsert: insere ou ignora se já existir (constraint unique(user_id, lesson_id))
+  if (DEMO_MODE) {
+    localStorage.setItem(KEY_DONE, JSON.stringify(COMPLETED_LESSONS));
+    return;
+  }
   const { error } = await supabase
     .from('lesson_progress')
     .upsert(
@@ -236,10 +301,14 @@ async function loadLastLesson() {
 }
 
 // =============================================
-// SALVAR ÚLTIMA AULA no Supabase (upsert em student_state)
+// SALVAR ÚLTIMA AULA
 // =============================================
 async function saveLastLesson(moduleId, lessonId) {
   LAST_LESSON = { moduleId, lessonId };
+  if (DEMO_MODE) {
+    localStorage.setItem(KEY_LAST, JSON.stringify(LAST_LESSON));
+    return;
+  }
   const { error } = await supabase
     .from('student_state')
     .upsert(
@@ -255,6 +324,7 @@ async function saveLastLesson(moduleId, lessonId) {
 function enterApp() {
   document.getElementById('screen-login').classList.remove('active');
   document.getElementById('input-email').value = '';
+  document.getElementById('input-name').value  = '';
   document.getElementById('input-pass').value  = '';
   document.getElementById('app-shell').classList.remove('hidden');
   showScreen('dashboard');
@@ -264,8 +334,16 @@ function enterApp() {
 // LOGOUT
 // =============================================
 async function logout() {
-  await supabase.auth.signOut();
-  // onAuthStateChange vai lidar com o SIGNED_OUT
+  if (DEMO_MODE) {
+    localStorage.removeItem(KEY_LOGGED);
+    localStorage.removeItem(KEY_NAME);
+    resetMemoryState();
+    document.getElementById('app-shell').classList.add('hidden');
+    document.getElementById('screen-login').classList.add('active');
+  } else {
+    await supabase.auth.signOut();
+    // onAuthStateChange cuida do resto
+  }
 }
 
 function resetMemoryState() {
@@ -277,7 +355,6 @@ function resetMemoryState() {
 
 // =============================================
 // RESET DEMO (5 cliques no logo)
-// Apaga progresso do Supabase, não o login.
 // =============================================
 async function handleLogoClick() {
   STATE.logoClickCount++;
@@ -286,14 +363,18 @@ async function handleLogoClick() {
 
   if (STATE.logoClickCount >= 5) {
     STATE.logoClickCount = 0;
-    if (!CURRENT_USER) return;
 
-    await supabase.from('lesson_progress').delete().eq('user_id', CURRENT_USER.id);
-    await supabase.from('student_state').delete().eq('user_id', CURRENT_USER.id);
+    if (DEMO_MODE) {
+      localStorage.removeItem(KEY_DONE);
+      localStorage.removeItem(KEY_LAST);
+    } else {
+      if (!CURRENT_USER) return;
+      await supabase.from('lesson_progress').delete().eq('user_id', CURRENT_USER.id);
+      await supabase.from('student_state').delete().eq('user_id', CURRENT_USER.id);
+    }
 
     COMPLETED_LESSONS = [];
     LAST_LESSON = null;
-
     showToast('Progresso da demo resetado.');
     if (STATE.currentScreen === 'dashboard') renderDashboard();
   }
