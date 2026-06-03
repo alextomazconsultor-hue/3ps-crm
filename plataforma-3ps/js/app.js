@@ -1,95 +1,72 @@
 /* =============================================
    MÉTODO 3PS — LÓGICA DA PLATAFORMA
-   Toda a lógica de estado, navegação e render
+   Autenticação e progresso via Supabase.
+   Módulos e aulas continuam em data.js.
 ============================================= */
 
-// ---- ESTADO ----
+// =============================================
+// ESTADO GLOBAL EM MEMÓRIA
+// Carregado do Supabase ao entrar no app.
+// =============================================
+let CURRENT_USER      = null;  // objeto do supabase.auth.getUser()
+let CURRENT_PROFILE   = null;  // linha da tabela profiles
+let COMPLETED_LESSONS = [];    // array de lesson_id strings
+let LAST_LESSON       = null;  // { moduleId, lessonId } ou null
+
 const STATE = {
-  currentScreen: 'dashboard',
+  currentScreen:   'dashboard',
   currentModuleId: null,
   currentLessonId: null,
-  logoClickCount: 0,
-  logoClickTimer: null
+  logoClickCount:  0,
+  logoClickTimer:  null
 };
 
-// ---- CHAVES localStorage ----
-const KEY_LOGGED  = '3ps_loggedIn';
-const KEY_NAME    = '3ps_name';
-const KEY_DONE    = '3ps_completed';  // JSON array de IDs de aulas concluídas
-const KEY_LAST    = '3ps_last';       // JSON { moduleId, lessonId }
-
-// ---- HELPERS localStorage ----
-function getCompleted() {
-  try { return JSON.parse(localStorage.getItem(KEY_DONE)) || []; }
-  catch { return []; }
-}
-function saveCompleted(arr) {
-  localStorage.setItem(KEY_DONE, JSON.stringify(arr));
-}
-function getLast() {
-  try { return JSON.parse(localStorage.getItem(KEY_LAST)) || null; }
-  catch { return null; }
-}
-function saveLast(moduleId, lessonId) {
-  localStorage.setItem(KEY_LAST, JSON.stringify({ moduleId, lessonId }));
-}
-
-// ---- STATS ----
-function totalLessons() {
-  return COURSE.reduce((s, m) => s + m.lessons.length, 0);
-}
-function completedCount() {
-  return getCompleted().length;
-}
-function overallPct() {
-  const total = totalLessons();
-  if (!total) return 0;
-  return Math.round((completedCount() / total) * 100);
-}
-function modulePct(mod) {
-  const done = getCompleted();
-  const c = mod.lessons.filter(l => done.includes(l.id)).length;
-  return mod.lessons.length ? Math.round((c / mod.lessons.length) * 100) : 0;
-}
-
-// ---- TOAST ----
+// =============================================
+// TOAST
+// =============================================
 let toastTimer = null;
 function showToast(msg) {
   const el = document.getElementById('toast');
   el.textContent = msg;
   el.classList.remove('hidden');
   if (toastTimer) clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.add('hidden'), 3000);
+  toastTimer = setTimeout(() => el.classList.add('hidden'), 3500);
+}
+
+// =============================================
+// STATS (calculados em memória sobre COMPLETED_LESSONS)
+// =============================================
+function totalLessons() {
+  return COURSE.reduce((s, m) => s + m.lessons.length, 0);
+}
+function completedCount() {
+  return COMPLETED_LESSONS.length;
+}
+function overallPct() {
+  const total = totalLessons();
+  return total ? Math.round((completedCount() / total) * 100) : 0;
+}
+function modulePct(mod) {
+  const c = mod.lessons.filter(l => COMPLETED_LESSONS.includes(l.id)).length;
+  return mod.lessons.length ? Math.round((c / mod.lessons.length) * 100) : 0;
 }
 
 // =============================================
 // TELAS / ROTEAMENTO
 // =============================================
-const MAIN_SCREENS = ['dashboard', 'modules', 'materials', 'community'];
-
 function showScreen(id) {
-  // Telas principais controlam nav ativa
-  document.querySelectorAll('.screen').forEach(s => {
-    s.classList.remove('active');
-  });
-
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   const target = document.getElementById('screen-' + id);
   if (target) target.classList.add('active');
-
   STATE.currentScreen = id;
 
-  // Nav links desktop
-  document.querySelectorAll('.nav-link').forEach(a => {
-    a.classList.toggle('active', a.dataset.screen === id);
-  });
-  // Bottom nav mobile
-  document.querySelectorAll('.bottom-nav-item').forEach(a => {
-    a.classList.toggle('active', a.dataset.screen === id);
-  });
+  document.querySelectorAll('.nav-link').forEach(a =>
+    a.classList.toggle('active', a.dataset.screen === id));
+  document.querySelectorAll('.bottom-nav-item').forEach(a =>
+    a.classList.toggle('active', a.dataset.screen === id));
 
-  // Renderizar conteúdo da tela
   if (id === 'dashboard') renderDashboard();
-  if (id === 'modules') renderModulesList();
+  if (id === 'modules')   renderModulesList();
 }
 
 function showModuleDetail(moduleId) {
@@ -103,7 +80,7 @@ function showModuleDetail(moduleId) {
 function showLesson(moduleId, lessonId) {
   STATE.currentModuleId = moduleId;
   STATE.currentLessonId = lessonId;
-  saveLast(moduleId, lessonId);
+  saveLastLesson(moduleId, lessonId);   // ← salva no Supabase (async, não bloqueia)
   renderLesson(moduleId, lessonId);
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('screen-lesson').classList.add('active');
@@ -111,76 +88,250 @@ function showLesson(moduleId, lessonId) {
 }
 
 // =============================================
-// AUTENTICAÇÃO
+// LOGIN — usa Supabase Auth
 // =============================================
-function initAuth() {
-  const loggedIn = localStorage.getItem(KEY_LOGGED);
-  if (loggedIn) {
+async function initAuth() {
+  // Verificar se já existe sessão ativa
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session) {
+    await loadUserData(session.user);
     enterApp();
+    return;
   }
 
-  document.getElementById('form-login').addEventListener('submit', e => {
+  // Listener: sessão muda (login/logout externo, token refresh)
+  supabase.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_IN' && session) {
+      await loadUserData(session.user);
+      enterApp();
+    }
+    if (event === 'SIGNED_OUT') {
+      resetMemoryState();
+      document.getElementById('app-shell').classList.add('hidden');
+      document.getElementById('screen-login').classList.add('active');
+    }
+  });
+
+  // Submissão do formulário de login
+  document.getElementById('form-login').addEventListener('submit', async e => {
     e.preventDefault();
     const email = document.getElementById('input-email').value.trim();
-    const name  = document.getElementById('input-name').value.trim();
     const pass  = document.getElementById('input-pass').value.trim();
     const err   = document.getElementById('login-error');
 
-    if (email.length < 3 || name.length < 1 || pass.length < 3) {
+    if (!email || pass.length < 3) {
+      err.textContent = 'Preencha e-mail e senha (mínimo 3 caracteres).';
       err.classList.remove('hidden');
       return;
     }
-    err.classList.add('hidden');
 
-    localStorage.setItem(KEY_LOGGED, '1');
-    localStorage.setItem(KEY_NAME, name);
-    enterApp();
+    const btnSubmit = e.target.querySelector('button[type="submit"]');
+    btnSubmit.textContent = 'Entrando...';
+    btnSubmit.disabled = true;
+
+    // ---- CHAMADA SUPABASE AUTH ----
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass });
+
+    btnSubmit.textContent = 'Entrar na plataforma';
+    btnSubmit.disabled = false;
+
+    if (error) {
+      err.textContent = traduzirErroAuth(error.message);
+      err.classList.remove('hidden');
+      return;
+    }
+
+    err.classList.add('hidden');
+    // onAuthStateChange vai capturar o SIGNED_IN e chamar enterApp()
   });
 }
 
+function traduzirErroAuth(msg) {
+  if (msg.includes('Invalid login credentials')) return 'E-mail ou senha incorretos.';
+  if (msg.includes('Email not confirmed'))       return 'Confirme seu e-mail antes de entrar.';
+  if (msg.includes('Too many requests'))         return 'Muitas tentativas. Aguarde e tente novamente.';
+  return 'Erro ao entrar. Tente novamente.';
+}
+
+// =============================================
+// CARREGAR DADOS DO USUÁRIO
+// Chamado após login ou ao detectar sessão ativa.
+// =============================================
+async function loadUserData(user) {
+  CURRENT_USER = user;
+
+  // ---- Buscar ou criar profile ----
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('user_id', user.id)
+    .single();
+
+  if (profile) {
+    CURRENT_PROFILE = profile;
+  } else {
+    // Primeiro acesso: cria o profile
+    const nome = user.user_metadata?.name || user.email.split('@')[0];
+    const { data: newProfile } = await supabase
+      .from('profiles')
+      .insert({ user_id: user.id, nome, email: user.email })
+      .select()
+      .single();
+    CURRENT_PROFILE = newProfile;
+  }
+
+  // ---- Carregar progresso das aulas ----
+  await loadProgress();
+
+  // ---- Carregar última aula assistida ----
+  await loadLastLesson();
+}
+
+// =============================================
+// CARREGAR PROGRESSO
+// Busca lesson_progress e popula COMPLETED_LESSONS
+// =============================================
+async function loadProgress() {
+  const { data, error } = await supabase
+    .from('lesson_progress')
+    .select('lesson_id')
+    .eq('user_id', CURRENT_USER.id)
+    .eq('completed', true);
+
+  if (error) { console.error('loadProgress:', error); return; }
+  COMPLETED_LESSONS = (data || []).map(r => r.lesson_id);
+}
+
+// =============================================
+// SALVAR PROGRESSO — marca aula como concluída no Supabase
+// =============================================
+async function saveProgress(lessonId) {
+  // Upsert: insere ou ignora se já existir (constraint unique(user_id, lesson_id))
+  const { error } = await supabase
+    .from('lesson_progress')
+    .upsert(
+      { user_id: CURRENT_USER.id, lesson_id: lessonId, completed: true, completed_at: new Date().toISOString() },
+      { onConflict: 'user_id,lesson_id' }
+    );
+  if (error) console.error('saveProgress:', error);
+}
+
+// =============================================
+// CARREGAR ÚLTIMA AULA
+// Popula LAST_LESSON a partir de student_state
+// =============================================
+async function loadLastLesson() {
+  const { data, error } = await supabase
+    .from('student_state')
+    .select('last_module_id, last_lesson_id')
+    .eq('user_id', CURRENT_USER.id)
+    .single();
+
+  if (error && error.code !== 'PGRST116') { // PGRST116 = "no rows"
+    console.error('loadLastLesson:', error); return;
+  }
+  LAST_LESSON = data
+    ? { moduleId: data.last_module_id, lessonId: data.last_lesson_id }
+    : null;
+}
+
+// =============================================
+// SALVAR ÚLTIMA AULA no Supabase (upsert em student_state)
+// =============================================
+async function saveLastLesson(moduleId, lessonId) {
+  LAST_LESSON = { moduleId, lessonId };
+  const { error } = await supabase
+    .from('student_state')
+    .upsert(
+      { user_id: CURRENT_USER.id, last_module_id: moduleId, last_lesson_id: lessonId, updated_at: new Date().toISOString() },
+      { onConflict: 'user_id' }
+    );
+  if (error) console.error('saveLastLesson:', error);
+}
+
+// =============================================
+// ENTRAR NO APP
+// =============================================
 function enterApp() {
   document.getElementById('screen-login').classList.remove('active');
+  document.getElementById('input-email').value = '';
+  document.getElementById('input-pass').value  = '';
   document.getElementById('app-shell').classList.remove('hidden');
   showScreen('dashboard');
 }
 
-function logout() {
-  localStorage.removeItem(KEY_LOGGED);
-  localStorage.removeItem(KEY_NAME);
-  document.getElementById('app-shell').classList.add('hidden');
-  document.getElementById('screen-login').classList.add('active');
-  // Limpar campos
-  document.getElementById('input-email').value = '';
-  document.getElementById('input-name').value  = '';
-  document.getElementById('input-pass').value  = '';
+// =============================================
+// LOGOUT
+// =============================================
+async function logout() {
+  await supabase.auth.signOut();
+  // onAuthStateChange vai lidar com o SIGNED_OUT
+}
+
+function resetMemoryState() {
+  CURRENT_USER      = null;
+  CURRENT_PROFILE   = null;
+  COMPLETED_LESSONS = [];
+  LAST_LESSON       = null;
 }
 
 // =============================================
 // RESET DEMO (5 cliques no logo)
+// Apaga progresso do Supabase, não o login.
 // =============================================
-function handleLogoClick() {
+async function handleLogoClick() {
   STATE.logoClickCount++;
   if (STATE.logoClickTimer) clearTimeout(STATE.logoClickTimer);
   STATE.logoClickTimer = setTimeout(() => { STATE.logoClickCount = 0; }, 2000);
 
   if (STATE.logoClickCount >= 5) {
     STATE.logoClickCount = 0;
-    localStorage.removeItem(KEY_DONE);
-    localStorage.removeItem(KEY_LAST);
+    if (!CURRENT_USER) return;
+
+    await supabase.from('lesson_progress').delete().eq('user_id', CURRENT_USER.id);
+    await supabase.from('student_state').delete().eq('user_id', CURRENT_USER.id);
+
+    COMPLETED_LESSONS = [];
+    LAST_LESSON = null;
+
     showToast('Progresso da demo resetado.');
     if (STATE.currentScreen === 'dashboard') renderDashboard();
   }
 }
 
 // =============================================
+// MARCAR AULA COMO CONCLUÍDA
+// =============================================
+async function markComplete(moduleId, lessonId) {
+  // Atualizar memória imediatamente (resposta visual instantânea)
+  if (!COMPLETED_LESSONS.includes(lessonId)) {
+    COMPLETED_LESSONS.push(lessonId);
+  }
+
+  // Atualizar botão
+  const btnComplete = document.getElementById('btn-complete');
+  btnComplete.textContent = '✓ Aula concluída';
+  btnComplete.disabled = true;
+  btnComplete.style.opacity = '0.5';
+
+  // Atualizar sidebar
+  const mod = COURSE.find(m => m.id === moduleId);
+  if (mod) renderSidebar(mod, lessonId);
+
+  showToast('Aula marcada como concluída!');
+
+  // ---- Persistir no Supabase (em background) ----
+  await saveProgress(lessonId);
+}
+
+// =============================================
 // RENDER — DASHBOARD
 // =============================================
 function renderDashboard() {
-  const name = localStorage.getItem(KEY_NAME) || 'Aluno';
+  const nome = CURRENT_PROFILE?.nome || CURRENT_USER?.email?.split('@')[0] || 'Aluno';
   document.getElementById('dash-greeting').textContent =
-    `Olá, ${name}. Continue sua evolução no Método 3Ps.`;
+    `Olá, ${nome}. Continue sua evolução no Método 3Ps.`;
 
-  // Stats
   const pct   = overallPct();
   const done  = completedCount();
   const total = totalLessons();
@@ -203,49 +354,38 @@ function renderDashboard() {
     </div>
   `;
 
-  // Continuar assistindo
   renderContinue();
 
-  // Módulos (mini cards no dashboard)
   const modGrid = document.getElementById('dash-modules');
   modGrid.innerHTML = '';
-  COURSE.forEach(mod => {
-    modGrid.appendChild(buildModuleCard(mod));
-  });
+  COURSE.forEach(mod => modGrid.appendChild(buildModuleCard(mod)));
 }
 
 function renderContinue() {
-  const last = getLast();
   const el = document.getElementById('dash-continue');
 
-  if (!last) {
-    // Primeira aula do curso
-    const mod = COURSE[0];
-    const lesson = mod.lessons[0];
+  if (!LAST_LESSON) {
+    const mod = COURSE[0], lesson = mod.lessons[0];
     el.innerHTML = continueCardHTML(mod, lesson, 'Começar do início');
     el.onclick = () => showLesson(mod.id, lesson.id);
     return;
   }
 
-  const mod = COURSE.find(m => m.id === last.moduleId);
+  const mod = COURSE.find(m => m.id === LAST_LESSON.moduleId);
   if (!mod) return;
-  const lesson = mod.lessons.find(l => l.id === last.lessonId);
+  const lesson = mod.lessons.find(l => l.id === LAST_LESSON.lessonId);
   if (!lesson) return;
 
-  const done = getCompleted();
-  if (done.includes(lesson.id)) {
-    // Próxima aula
+  if (COMPLETED_LESSONS.includes(lesson.id)) {
     const idx = mod.lessons.indexOf(lesson);
     if (idx < mod.lessons.length - 1) {
       const next = mod.lessons[idx + 1];
       el.innerHTML = continueCardHTML(mod, next, 'Próxima aula');
       el.onclick = () => showLesson(mod.id, next.id);
     } else {
-      // Próximo módulo
       const modIdx = COURSE.indexOf(mod);
       if (modIdx < COURSE.length - 1) {
-        const nextMod = COURSE[modIdx + 1];
-        const nextLesson = nextMod.lessons[0];
+        const nextMod = COURSE[modIdx + 1], nextLesson = nextMod.lessons[0];
         el.innerHTML = continueCardHTML(nextMod, nextLesson, 'Próximo módulo');
         el.onclick = () => showLesson(nextMod.id, nextLesson.id);
       } else {
@@ -278,9 +418,7 @@ function continueCardHTML(mod, lesson, label) {
 function renderModulesList() {
   const list = document.getElementById('modules-list');
   list.innerHTML = '';
-  COURSE.forEach(mod => {
-    list.appendChild(buildModuleCard(mod));
-  });
+  COURSE.forEach(mod => list.appendChild(buildModuleCard(mod)));
 }
 
 function buildModuleCard(mod) {
@@ -290,9 +428,7 @@ function buildModuleCard(mod) {
   div.innerHTML = `
     <div class="module-card-header">
       <div class="module-num">${mod.n}</div>
-      <div>
-        <div class="module-card-title">${mod.title}</div>
-      </div>
+      <div><div class="module-card-title">${mod.title}</div></div>
     </div>
     <div class="module-card-desc">${mod.desc}</div>
     <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
@@ -313,7 +449,6 @@ function renderModuleDetail(moduleId) {
   if (!mod) return;
 
   const pct = modulePct(mod);
-
   document.getElementById('module-detail-header').innerHTML = `
     <div class="module-detail-title">Módulo ${mod.n}: ${mod.title}</div>
     <div class="module-detail-desc">${mod.desc}</div>
@@ -325,12 +460,10 @@ function renderModuleDetail(moduleId) {
 
   const list = document.getElementById('lessons-list');
   list.innerHTML = '';
-  const done = getCompleted();
-  const last = getLast();
 
   mod.lessons.forEach(lesson => {
-    const isDone = done.includes(lesson.id);
-    const isCurrent = last && last.lessonId === lesson.id;
+    const isDone    = COMPLETED_LESSONS.includes(lesson.id);
+    const isCurrent = LAST_LESSON && LAST_LESSON.lessonId === lesson.id;
     const statusLabel = isDone ? 'Concluída' : isCurrent ? 'Atual' : 'Pendente';
     const statusClass = isDone ? 'done' : isCurrent ? 'current' : 'pending';
 
@@ -353,65 +486,56 @@ function renderModuleDetail(moduleId) {
 // RENDER — AULA
 // =============================================
 function renderLesson(moduleId, lessonId) {
-  const mod = COURSE.find(m => m.id === moduleId);
+  const mod    = COURSE.find(m => m.id === moduleId);
   if (!mod) return;
   const lesson = mod.lessons.find(l => l.id === lessonId);
   if (!lesson) return;
 
-  // Player
   document.getElementById('lesson-iframe').src = lesson.videoUrl;
-
-  // Info
   document.getElementById('lesson-title').textContent = `${lesson.n}. ${lesson.title}`;
-  document.getElementById('lesson-desc').textContent = lesson.desc;
+  document.getElementById('lesson-desc').textContent  = lesson.desc;
 
   // Botão concluída
   const btnComplete = document.getElementById('btn-complete');
-  const done = getCompleted();
-  if (done.includes(lessonId)) {
+  if (COMPLETED_LESSONS.includes(lessonId)) {
     btnComplete.textContent = '✓ Aula concluída';
-    btnComplete.disabled = true;
+    btnComplete.disabled    = true;
     btnComplete.style.opacity = '0.5';
   } else {
     btnComplete.textContent = '✓ Marcar como concluída';
-    btnComplete.disabled = false;
+    btnComplete.disabled    = false;
     btnComplete.style.opacity = '1';
   }
   btnComplete.onclick = () => markComplete(moduleId, lessonId);
 
-  // Botão próxima
-  const btnNext = document.getElementById('btn-next');
-  const idx = mod.lessons.indexOf(lesson);
-  const modIdx = COURSE.indexOf(mod);
+  // Botão próxima aula
+  const btnNext  = document.getElementById('btn-next');
+  const idx      = mod.lessons.indexOf(lesson);
+  const modIdx   = COURSE.indexOf(mod);
   if (idx < mod.lessons.length - 1) {
-    // Próxima aula no mesmo módulo
     btnNext.style.display = '';
-    btnNext.textContent = 'Próxima aula →';
+    btnNext.textContent   = 'Próxima aula →';
     btnNext.onclick = () => showLesson(moduleId, mod.lessons[idx + 1].id);
   } else if (modIdx < COURSE.length - 1) {
-    // Primeira aula do próximo módulo
     const nextMod = COURSE[modIdx + 1];
     btnNext.style.display = '';
-    btnNext.textContent = `Próximo módulo →`;
+    btnNext.textContent   = 'Próximo módulo →';
     btnNext.onclick = () => showLesson(nextMod.id, nextMod.lessons[0].id);
   } else {
-    // Última aula do último módulo
     btnNext.style.display = '';
-    btnNext.textContent = '🎉 Conclusão';
+    btnNext.textContent   = '🎉 Conclusão';
     btnNext.onclick = () => showToast('Você concluiu todas as aulas disponíveis. Parabéns!');
   }
 
-  // Sidebar
   renderSidebar(mod, lessonId);
 }
 
 function renderSidebar(mod, currentLessonId) {
   const list = document.getElementById('sidebar-lessons');
   list.innerHTML = '';
-  const done = getCompleted();
 
   mod.lessons.forEach(lesson => {
-    const isDone = done.includes(lesson.id);
+    const isDone    = COMPLETED_LESSONS.includes(lesson.id);
     const isCurrent = lesson.id === currentLessonId;
 
     const item = document.createElement('div');
@@ -429,51 +553,20 @@ function renderSidebar(mod, currentLessonId) {
 }
 
 // =============================================
-// MARCAR AULA COMO CONCLUÍDA
-// =============================================
-function markComplete(moduleId, lessonId) {
-  const done = getCompleted();
-  if (!done.includes(lessonId)) {
-    done.push(lessonId);
-    saveCompleted(done);
-  }
-
-  // Atualizar botão
-  const btnComplete = document.getElementById('btn-complete');
-  btnComplete.textContent = '✓ Aula concluída';
-  btnComplete.disabled = true;
-  btnComplete.style.opacity = '0.5';
-
-  // Atualizar sidebar com progresso novo
-  const mod = COURSE.find(m => m.id === moduleId);
-  if (mod) renderSidebar(mod, lessonId);
-
-  showToast('Aula marcada como concluída!');
-}
-
-// =============================================
 // INIT
 // =============================================
 function init() {
   initAuth();
 
-  // Logout
   document.getElementById('btn-logout').addEventListener('click', logout);
 
   // Nav desktop
   document.querySelectorAll('.nav-link[data-screen]').forEach(a => {
-    a.addEventListener('click', e => {
-      e.preventDefault();
-      showScreen(a.dataset.screen);
-    });
+    a.addEventListener('click', e => { e.preventDefault(); showScreen(a.dataset.screen); });
   });
-
   // Bottom nav mobile
   document.querySelectorAll('.bottom-nav-item[data-screen]').forEach(a => {
-    a.addEventListener('click', e => {
-      e.preventDefault();
-      showScreen(a.dataset.screen);
-    });
+    a.addEventListener('click', e => { e.preventDefault(); showScreen(a.dataset.screen); });
   });
 
   // Voltar para módulos (tela de detalhe)
@@ -481,15 +574,11 @@ function init() {
     showScreen('modules');
   });
 
-  // Voltar para módulo (tela de aula)
+  // Voltar para módulo (tela de aula) — re-renderiza para refletir progresso
   document.getElementById('btn-back-module').addEventListener('click', () => {
     document.getElementById('lesson-iframe').src = '';
-    if (STATE.currentModuleId) {
-      // Re-renderiza o detalhe do módulo para refletir progresso atualizado
-      showModuleDetail(STATE.currentModuleId);
-    } else {
-      showScreen('modules');
-    }
+    if (STATE.currentModuleId) showModuleDetail(STATE.currentModuleId);
+    else showScreen('modules');
   });
 
   // Logo — reset demo (5 cliques)
