@@ -382,11 +382,23 @@ function renderLesson(moduleId, lessonId) {
   // Botão próxima
   const btnNext = document.getElementById('btn-next');
   const idx = mod.lessons.indexOf(lesson);
+  const modIdx = COURSE.indexOf(mod);
   if (idx < mod.lessons.length - 1) {
+    // Próxima aula no mesmo módulo
     btnNext.style.display = '';
+    btnNext.textContent = 'Próxima aula →';
     btnNext.onclick = () => showLesson(moduleId, mod.lessons[idx + 1].id);
+  } else if (modIdx < COURSE.length - 1) {
+    // Primeira aula do próximo módulo
+    const nextMod = COURSE[modIdx + 1];
+    btnNext.style.display = '';
+    btnNext.textContent = `Próximo módulo →`;
+    btnNext.onclick = () => showLesson(nextMod.id, nextMod.lessons[0].id);
   } else {
-    btnNext.style.display = 'none';
+    // Última aula do último módulo
+    btnNext.style.display = '';
+    btnNext.textContent = '🎉 Conclusão';
+    btnNext.onclick = () => showToast('Você concluiu todas as aulas disponíveis. Parabéns!');
   }
 
   // Sidebar
@@ -432,7 +444,7 @@ function markComplete(moduleId, lessonId) {
   btnComplete.disabled = true;
   btnComplete.style.opacity = '0.5';
 
-  // Atualizar sidebar
+  // Atualizar sidebar com progresso novo
   const mod = COURSE.find(m => m.id === moduleId);
   if (mod) renderSidebar(mod, lessonId);
 
@@ -471,13 +483,13 @@ function init() {
 
   // Voltar para módulo (tela de aula)
   document.getElementById('btn-back-module').addEventListener('click', () => {
+    document.getElementById('lesson-iframe').src = '';
     if (STATE.currentModuleId) {
+      // Re-renderiza o detalhe do módulo para refletir progresso atualizado
       showModuleDetail(STATE.currentModuleId);
     } else {
       showScreen('modules');
     }
-    // Limpar iframe ao sair para não continuar tocando
-    document.getElementById('lesson-iframe').src = '';
   });
 
   // Logo — reset demo (5 cliques)
