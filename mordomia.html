@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mordomia Financeira</title>
+<style>
+  :root {
+    --bg: #0f0f13;
+    --bg2: #16161d;
+    --bg3: #1e1e28;
+    --border: #2a2a38;
+    --accent: #6c63ff;
+    --accent2: #a78bfa;
+    --green: #22c55e;
+    --red: #ef4444;
+    --yellow: #f59e0b;
+    --blue: #3b82f6;
+    --text: #e8e8f0;
+    --text2: #9090a8;
+    --text3: #606078;
+    --card: #1a1a24;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.5;
+    overflow-x: hidden;
+  }
+
+  /* Layout */
+  #app { display: flex; flex-direction: column; min-height: 100vh; }
+  header {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  header h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
+  header h1 span { color: var(--accent2); }
+  .month-badge {
+    font-size: 12px;
+    color: var(--text2);
+    background: var(--bg3);
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+  }
+
+  main {
+    flex: 1;
+    padding: 16px;
+    padding-bottom: 80px;
+    max-width: 680px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  /* Bottom Nav */
+  nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    display: flex;
+    z-index: 100;
+  }
+  nav button {
+    flex: 1;
+    background: none;
+    border: none;
+    color: var(--text3);
+    font-size: 10px;
+    padding: 10px 4px 12px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    transition: color 0.2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  nav button .icon { font-size: 20px; }
+  nav button.active { color: var(--accent2); }
+  nav button:active { opacity: 0.7; }
+
+  /* Screens */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* Cards */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  .card-title {
+    font-size: 12px;
+    color: var(--text2);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+  .card-value {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+  .card-value.green { color: var(--green); }
+  .card-value.red { color: var(--red); }
+  .card-value.yellow { color: var(--yellow); }
+  .card-value.purple { color: var(--accent2); }
+
+  /* Grid */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+  .grid-2 .card, .grid-3 .card { margin-bottom: 0; }
+  .grid-2 .card .card-value, .grid-3 .card .card-value { font-size: 18px; }
+
+  /* Section title */
+  .section-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text2);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 20px 0 10px;
+  }
+
+  /* Message banner */
+  .message-banner {
+    background: linear-gradient(135deg, #1e1a3a, #1a2535);
+    border: 1px solid #3a3060;
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 12px;
+    font-size: 13px;
+    color: var(--accent2);
+    font-style: italic;
+    line-height: 1.6;
+    text-align: center;
+  }
+
+  /* Next bills */
+  .bill-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .bill-item:last-child { border-bottom: none; }
+  .bill-desc { font-size: 14px; }
+  .bill-meta { font-size: 12px; color: var(--text2); margin-top: 2px; }
+  .bill-val { font-size: 15px; font-weight: 600; color: var(--red); }
+
+  /* Input area */
+  .input-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  .input-box label {
+    display: block;
+    font-size: 12px;
+    color: var(--text2);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .input-row { display: flex; gap: 8px; }
+  textarea, input[type="text"], input[type="number"], select {
+    width: 100%;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-size: 15px;
+    padding: 12px 14px;
+    outline: none;
+    font-family: inherit;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+  }
+  textarea:focus, input[type="text"]:focus, input[type="number"]:focus, select:focus {
+    border-color: var(--accent);
+  }
+  textarea { resize: none; height: 80px; }
+  select option { background: var(--bg3); }
+
+  /* Hints */
+  .hints {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+  }
+  .hint {
+    font-size: 11px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 10px;
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .hint:active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 12px 20px;
+    border-radius: var(--radius-sm);
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+    -webkit-tap-highlight-color: transparent;
+    font-family: inherit;
+  }
+  .btn:active { opacity: 0.8; transform: scale(0.98); }
+  .btn-primary { background: var(--accent); color: #fff; width: 100%; }
+  .btn-sm {
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .btn-ghost { background: var(--bg3); color: var(--text2); border: 1px solid var(--border); }
+  .btn-danger { background: #2d1515; color: var(--red); border: 1px solid #4d2020; }
+  .btn-success { background: #152d1f; color: var(--green); border: 1px solid #204d30; }
+
+  /* Toast */
+  #toast {
+    position: fixed;
+    bottom: 90px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 20px;
+    font-size: 14px;
+    z-index: 999;
+    opacity: 0;
+    transition: all 0.3s;
+    white-space: nowrap;
+    max-width: 90vw;
+    text-align: center;
+    pointer-events: none;
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* Transaction list */
+  .tx-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .tx-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .tx-icon.income { background: #152d1f; }
+  .tx-icon.expense { background: #2d1515; }
+  .tx-icon.bill { background: #2d2415; }
+  .tx-icon.debt { background: #1a1530; }
+  .tx-body { flex: 1; min-width: 0; }
+  .tx-desc { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tx-meta { font-size: 12px; color: var(--text2); margin-top: 2px; }
+  .tx-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
+  .tx-val { font-size: 15px; font-weight: 700; }
+  .tx-val.income { color: var(--green); }
+  .tx-val.expense { color: var(--red); }
+  .tx-val.bill { color: var(--yellow); }
+  .tx-val.debt { color: var(--accent2); }
+  .tx-actions { display: flex; gap: 4px; }
+
+  /* Status badge */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .badge-paid { background: #152d1f; color: var(--green); }
+  .badge-pending { background: #2d2415; color: var(--yellow); }
+  .badge-mapeada { background: #1a1530; color: var(--accent2); }
+  .badge-espera { background: #15202d; color: var(--blue); }
+  .badge-negociacao { background: #2d2415; color: var(--yellow); }
+  .badge-acordo { background: #152020; color: #2dd4bf; }
+  .badge-quitada { background: #152d1f; color: var(--green); }
+
+  /* Debt card */
+  .debt-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px;
+    margin-bottom: 10px;
+  }
+  .debt-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+  .debt-name { font-size: 15px; font-weight: 600; }
+  .debt-val { font-size: 18px; font-weight: 700; color: var(--accent2); }
+  .debt-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; }
+
+  /* Jars */
+  .jar-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px;
+    margin-bottom: 10px;
+  }
+  .jar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .jar-name { font-size: 14px; font-weight: 600; }
+  .jar-pct {
+    font-size: 12px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2px 10px;
+    color: var(--accent2);
+    font-weight: 600;
+  }
+  .jar-bar-bg {
+    height: 6px;
+    background: var(--bg3);
+    border-radius: 3px;
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+  .jar-bar { height: 100%; border-radius: 3px; background: var(--accent); transition: width 0.4s; }
+  .jar-footer { display: flex; align-items: center; gap: 8px; }
+  .jar-footer input[type="number"] {
+    width: 130px;
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+
+  /* Settings */
+  .settings-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 10px;
+  }
+  .settings-label { font-size: 13px; color: var(--text2); margin-bottom: 8px; font-weight: 500; }
+  .settings-item input[type="number"] { font-size: 16px; }
+
+  /* Filter bar */
+  .filter-bar { display: flex; gap: 8px; margin-bottom: 14px; overflow-x: auto; padding-bottom: 4px; }
+  .filter-bar::-webkit-scrollbar { display: none; }
+  .filter-btn {
+    flex-shrink: 0;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--bg3);
+    color: var(--text2);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .filter-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  /* Empty state */
+  .empty {
+    text-align: center;
+    color: var(--text3);
+    padding: 40px 20px;
+    font-size: 14px;
+  }
+  .empty .empty-icon { font-size: 36px; margin-bottom: 10px; }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 200;
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius) var(--radius) 0 0;
+    width: 100%;
+    max-width: 680px;
+    padding: 20px 16px 32px;
+    animation: slideUp 0.25s ease;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(40px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  .modal-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .modal-close {
+    background: none;
+    border: none;
+    color: var(--text2);
+    font-size: 22px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+  }
+  .form-group { margin-bottom: 12px; }
+  .form-label { font-size: 12px; color: var(--text2); margin-bottom: 6px; display: block; text-transform: uppercase; letter-spacing: 0.4px; }
+  .form-row { display: flex; gap: 8px; }
+  .form-row .form-group { flex: 1; }
+
+  /* Survival meter */
+  .survival-meter {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px;
+    margin-bottom: 12px;
+  }
+  .survival-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
+  .survival-title { font-size: 13px; color: var(--text2); }
+  .survival-pct { font-size: 13px; font-weight: 700; color: var(--yellow); }
+  .progress-bg { height: 8px; background: var(--bg3); border-radius: 4px; overflow: hidden; }
+  .progress-bar { height: 100%; border-radius: 4px; transition: width 0.5s; }
+  .progress-bar.ok { background: var(--green); }
+  .progress-bar.warn { background: var(--yellow); }
+  .progress-bar.danger { background: var(--red); }
+
+  @media (min-width: 600px) {
+    main { padding: 24px; padding-bottom: 90px; }
+    nav button { font-size: 11px; }
+    nav button .icon { font-size: 22px; }
+    .grid-2 .card .card-value, .grid-3 .card .card-value { font-size: 20px; }
+    .card-value { font-size: 30px; }
+    .modal { border-radius: var(--radius); margin-bottom: 20px; }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1>Mordomia <span>Financeira</span></h1>
+    <span class="month-badge" id="currentMonth"></span>
+  </header>
+
+  <main>
+    <!-- PAINEL -->
+    <section class="screen active" id="screen-painel">
+      <div class="message-banner">
+        "Sobrevivência primeiro. Dívidas com estratégia. Crescimento com consciência."
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Total Recebido</div>
+          <div class="card-value green" id="dash-income">R$ 0,00</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Total Gasto</div>
+          <div class="card-value red" id="dash-expense">R$ 0,00</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Saldo do Mês</div>
+        <div class="card-value" id="dash-balance">R$ 0,00</div>
+      </div>
+      <div class="survival-meter">
+        <div class="survival-header">
+          <span class="survival-title">Progresso — Sobrevivência</span>
+          <span class="survival-pct" id="survival-pct">0%</span>
+        </div>
+        <div class="progress-bg">
+          <div class="progress-bar" id="survival-bar" style="width:0%"></div>
+        </div>
+      </div>
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">Entradas Previstas</div>
+          <div class="card-value purple" id="dash-incoming">R$ 0,00</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Saídas Pendentes</div>
+          <div class="card-value yellow" id="dash-pending">R$ 0,00</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Dívidas Mapeadas</div>
+          <div class="card-value" id="dash-debts" style="color:var(--accent2)">R$ 0,00</div>
+        </div>
+      </div>
+      <div class="card" id="dash-survival-card">
+        <div class="card-title">Falta para Sobrevivência</div>
+        <div class="card-value yellow" id="dash-survival">R$ 0,00</div>
+      </div>
+      <div class="section-title">Próximos Vencimentos</div>
+      <div class="card" id="upcoming-bills-container">
+        <div class="empty" id="no-bills">
+          <div class="empty-icon">📅</div>
+          Nenhum vencimento registrado
+        </div>
+        <div id="upcoming-bills-list"></div>
+      </div>
+    </section>
+
+    <!-- REGISTRAR -->
+    <section class="screen" id="screen-registrar">
+      <div class="input-box">
+        <label>Digite em linguagem natural</label>
+        <textarea id="quick-input" placeholder="Ex: gasto 10,50 padaria&#10;entrou 1000 salário&#10;divida cartão nubank 4500&#10;conta aluguel 1800 vence dia 10"></textarea>
+        <div class="hints">
+          <span class="hint" onclick="setHint('gasto 10,50 padaria')">gasto 10,50 padaria</span>
+          <span class="hint" onclick="setHint('entrou 1000 salário')">entrou 1000 salário</span>
+          <span class="hint" onclick="setHint('divida cartão nubank 4500')">divida cartão 4500</span>
+          <span class="hint" onclick="setHint('conta aluguel 1800 vence dia 10')">conta aluguel vence 10</span>
+          <span class="hint" onclick="setHint('recebi 247 curso 3ps')">recebi 247 curso</span>
+        </div>
+        <div style="margin-top:12px">
+          <button class="btn btn-primary" onclick="parseAndSave()">Registrar</button>
+        </div>
+      </div>
+      <div id="last-registered" style="display:none">
+        <div class="section-title">Último Registrado</div>
+        <div id="last-item-container"></div>
+      </div>
+      <div class="section-title">Registrar Manualmente</div>
+      <div class="card">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Tipo</label>
+            <select id="manual-type">
+              <option value="expense">Gasto</option>
+              <option value="income">Entrada</option>
+              <option value="bill">Conta/Parcela</option>
+              <option value="debt">Dívida</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Valor (R$)</label>
+            <input type="number" id="manual-value" placeholder="0,00" step="0.01" min="0">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Descrição</label>
+          <input type="text" id="manual-desc" placeholder="Descrição">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Categoria</label>
+            <select id="manual-cat">
+              <option value="Alimentação">Alimentação</option>
+              <option value="Moradia">Moradia</option>
+              <option value="Transporte">Transporte</option>
+              <option value="Contas básicas">Contas básicas</option>
+              <option value="Educação">Educação</option>
+              <option value="Dívidas">Dívidas</option>
+              <option value="Saúde">Saúde</option>
+              <option value="Lazer">Lazer</option>
+              <option value="Outros">Outros</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Data</label>
+            <input type="text" id="manual-date" placeholder="dd/mm/aaaa" maxlength="10">
+          </div>
+        </div>
+        <div class="form-group" id="manual-dueday-group" style="display:none">
+          <label class="form-label">Dia do Vencimento</label>
+          <input type="number" id="manual-dueday" placeholder="10" min="1" max="31">
+        </div>
+        <button class="btn btn-primary" onclick="saveManual()">Salvar</button>
+      </div>
+    </section>
+
+    <!-- LANÇAMENTOS -->
+    <section class="screen" id="screen-lancamentos">
+      <div class="filter-bar">
+        <button class="filter-btn active" onclick="filterTx('all', this)">Todos</button>
+        <button class="filter-btn" onclick="filterTx('income', this)">Entradas</button>
+        <button class="filter-btn" onclick="filterTx('expense', this)">Gastos</button>
+        <button class="filter-btn" onclick="filterTx('bill', this)">Contas</button>
+      </div>
+      <div id="tx-list"></div>
+    </section>
+
+    <!-- DÍVIDAS -->
+    <section class="screen" id="screen-dividas">
+      <div class="message-banner" style="color:#a78bfa">
+        "Eu não fujo das dívidas. Eu organizo, estabilizo e negocio no tempo certo."
+      </div>
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-title">Total em Dívidas</div>
+        <div class="card-value" id="total-debts-val" style="color:var(--accent2)">R$ 0,00</div>
+      </div>
+      <div class="filter-bar">
+        <button class="filter-btn active" onclick="filterDebts('all', this)">Todas</button>
+        <button class="filter-btn" onclick="filterDebts('mapeada', this)">Mapeadas</button>
+        <button class="filter-btn" onclick="filterDebts('em espera estratégica', this)">Em Espera</button>
+        <button class="filter-btn" onclick="filterDebts('em negociação', this)">Negociando</button>
+        <button class="filter-btn" onclick="filterDebts('acordo ativo', this)">Acordo</button>
+        <button class="filter-btn" onclick="filterDebts('quitada', this)">Quitadas</button>
+      </div>
+      <div id="debt-list"></div>
+      <button class="btn btn-primary" onclick="openDebtModal(null)" style="margin-top:8px">+ Nova Dívida</button>
+    </section>
+
+    <!-- POTES -->
+    <section class="screen" id="screen-potes">
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-title">Renda para distribuir</div>
+        <div class="card-value green" id="jars-income">R$ 0,00</div>
+      </div>
+      <div id="jars-list"></div>
+    </section>
+
+    <!-- CONFIGURAÇÕES -->
+    <section class="screen" id="screen-config">
+      <div class="settings-item">
+        <div class="settings-label">Meta de Sobrevivência Mensal (R$)</div>
+        <input type="number" id="cfg-survival" placeholder="Ex: 3000" min="0">
+      </div>
+      <div class="settings-item">
+        <div class="settings-label">Saldo Disponível Atual (R$)</div>
+        <input type="number" id="cfg-balance" placeholder="Ex: 500" min="0">
+      </div>
+      <button class="btn btn-primary" onclick="saveSettings()" style="margin-bottom:16px">Salvar Configurações</button>
+      <div class="settings-item" style="border-color:#4d2020">
+        <div class="settings-label" style="color:var(--red)">Zona de Perigo</div>
+        <button class="btn btn-danger" onclick="confirmClearAll()" style="width:100%;margin-top:4px">Apagar Todos os Dados</button>
+      </div>
+    </section>
+  </main>
+
+  <nav>
+    <button class="active" onclick="goTo('painel', this)">
+      <span class="icon">🏠</span>Painel
+    </button>
+    <button onclick="goTo('registrar', this)">
+      <span class="icon">✏️</span>Registrar
+    </button>
+    <button onclick="goTo('lancamentos', this)">
+      <span class="icon">📋</span>Lançamentos
+    </button>
+    <button onclick="goTo('dividas', this)">
+      <span class="icon">🧾</span>Dívidas
+    </button>
+    <button onclick="goTo('potes', this)">
+      <span class="icon">🫙</span>Potes
+    </button>
+    <button onclick="goTo('config', this)">
+      <span class="icon">⚙️</span>Config
+    </button>
+  </nav>
+
+  <div id="toast"></div>
+</div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modal-tx">
+  <div class="modal">
+    <div class="modal-title">
+      <span id="modal-tx-title">Editar Lançamento</span>
+      <button class="modal-close" onclick="closeModal('modal-tx')">×</button>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Tipo</label>
+        <select id="edit-type">
+          <option value="expense">Gasto</option>
+          <option value="income">Entrada</option>
+          <option value="bill">Conta/Parcela</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Valor (R$)</label>
+        <input type="number" id="edit-value" step="0.01" min="0">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Descrição</label>
+      <input type="text" id="edit-desc">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Categoria</label>
+        <select id="edit-cat">
+          <option>Alimentação</option>
+          <option>Moradia</option>
+          <option>Transporte</option>
+          <option>Contas básicas</option>
+          <option>Educação</option>
+          <option>Dívidas</option>
+          <option>Saúde</option>
+          <option>Lazer</option>
+          <option>Outros</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Data</label>
+        <input type="text" id="edit-date" maxlength="10">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Status</label>
+      <select id="edit-status">
+        <option value="paid">Pago</option>
+        <option value="pending">Pendente</option>
+      </select>
+    </div>
+    <input type="hidden" id="edit-id">
+    <button class="btn btn-primary" onclick="saveTxEdit()">Salvar</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-debt">
+  <div class="modal">
+    <div class="modal-title">
+      <span id="modal-debt-title">Nova Dívida</span>
+      <button class="modal-close" onclick="closeModal('modal-debt')">×</button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Credor / Nome</label>
+      <input type="text" id="debt-name" placeholder="Ex: Cartão Nubank">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Valor (R$)</label>
+      <input type="number" id="debt-value" step="0.01" min="0">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Status</label>
+        <select id="debt-status">
+          <option value="mapeada">Mapeada</option>
+          <option value="em espera estratégica">Em espera estratégica</option>
+          <option value="em negociação">Em negociação</option>
+          <option value="acordo ativo">Acordo ativo</option>
+          <option value="quitada">Quitada</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Data de Revisão</label>
+        <input type="text" id="debt-review" placeholder="dd/mm/aaaa" maxlength="10">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Observação (opcional)</label>
+      <input type="text" id="debt-note" placeholder="Ex: aguardando proposta">
+    </div>
+    <input type="hidden" id="debt-edit-id">
+    <button class="btn btn-primary" onclick="saveDebt()">Salvar Dívida</button>
+  </div>
+</div>
+
+<script>
+// ===================== STORAGE =====================
+const DB = {
+  get: (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } },
+  set: (k, v) => localStorage.setItem(k, JSON.stringify(v)),
+};
+
+let transactions = DB.get('mf_tx', []);
+let debts = DB.get('mf_debts', []);
+let jars = DB.get('mf_jars', [
+  { id: 1, name: 'Sobrevivência / Necessidades', pct: 55, balance: 0 },
+  { id: 2, name: 'Liberdade Financeira', pct: 10, balance: 0 },
+  { id: 3, name: 'Educação', pct: 10, balance: 0 },
+  { id: 4, name: 'Diversão', pct: 10, balance: 0 },
+  { id: 5, name: 'Longo Prazo', pct: 10, balance: 0 },
+  { id: 6, name: 'Generosidade', pct: 5, balance: 0 },
+  { id: 7, name: 'Regularização / Dívidas', pct: 0, balance: 0 },
+]);
+let settings = DB.get('mf_settings', { survivalTarget: 3000, availableBalance: 0 });
+
+function save() {
+  DB.set('mf_tx', transactions);
+  DB.set('mf_debts', debts);
+  DB.set('mf_jars', jars);
+  DB.set('mf_settings', settings);
+}
+
+// ===================== UTILS =====================
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+
+function fmtBRL(v) {
+  return 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function todayStr() {
+  const d = new Date();
+  return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+}
+
+function currentMonth() {
+  const d = new Date();
+  return `${d.getMonth()+1}/${d.getFullYear()}`;
+}
+
+function isCurrentMonth(dateStr) {
+  if (!dateStr) return true;
+  const [dd, mm, yyyy] = dateStr.split('/');
+  const d = new Date();
+  return parseInt(mm) === d.getMonth()+1 && parseInt(yyyy) === d.getFullYear();
+}
+
+function monthLabel() {
+  const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  const d = new Date();
+  return `${months[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+function formatDateInput(inp) {
+  inp.addEventListener('input', function() {
+    let v = this.value.replace(/\D/g,'');
+    if (v.length >= 3) v = v.slice(0,2)+'/'+v.slice(2);
+    if (v.length >= 6) v = v.slice(0,5)+'/'+v.slice(5,9);
+    this.value = v;
+  });
+}
+
+// ===================== NAVIGATION =====================
+function goTo(screen, btn) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + screen).classList.add('active');
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if (screen === 'painel') renderDashboard();
+  if (screen === 'lancamentos') renderTx('all');
+  if (screen === 'dividas') renderDebts('all');
+  if (screen === 'potes') renderJars();
+  if (screen === 'config') loadSettings();
+}
+
+// ===================== PARSING =====================
+function parseValue(text) {
+  const m = text.match(/(\d{1,3}(?:\.\d{3})*(?:,\d{1,2})?|\d+(?:,\d{1,2})?)/);
+  if (!m) return 0;
+  return parseFloat(m[1].replace('.','').replace(',','.'));
+}
+
+function detectCategory(text) {
+  const t = text.toLowerCase();
+  if (/padaria|mercado|comida|lanche|restaurante|refeição|alimentação|almoço|jantar|café/.test(t)) return 'Alimentação';
+  if (/uber|gasolina|combustível|ônibus|metrô|passagem|transporte|carro/.test(t)) return 'Transporte';
+  if (/aluguel|condomínio|iptu|moradia/.test(t)) return 'Moradia';
+  if (/luz|água|internet|celular|telefone|contas/.test(t)) return 'Contas básicas';
+  if (/curso|mentoria|livro|ia|claude|openai|educação|estudo|treinamento|3ps/.test(t)) return 'Educação';
+  if (/cartão|banco|empréstimo|financiamento|dívida|nubank|itaú|bradesco|caixa/.test(t)) return 'Dívidas';
+  if (/saúde|médico|remédio|farmácia|plano/.test(t)) return 'Saúde';
+  if (/lazer|cinema|viagem|netflix|streaming|jogo/.test(t)) return 'Lazer';
+  return 'Outros';
+}
+
+function parseDueDay(text) {
+  const m = text.match(/(?:vence?|dia|vencimento)\s*(?:dia\s*)?(\d{1,2})/i);
+  return m ? parseInt(m[1]) : null;
+}
+
+function parseAndSave() {
+  const raw = document.getElementById('quick-input').value.trim();
+  if (!raw) { toast('Digite algo para registrar'); return; }
+
+  const t = raw.toLowerCase();
+  let type, desc, value, category, status, dueDay;
+
+  value = parseValue(raw);
+  if (!value) { toast('Não encontrei um valor. Ex: gasto 10,50 padaria'); return; }
+
+  // Remove value from text for desc
+  const cleanDesc = raw.replace(/(\d{1,3}(?:\.\d{3})*(?:,\d{1,2})?|\d+(?:,\d{1,2})?)/, '').replace(/\s+/g,' ').trim();
+
+  if (/dívida|divida/.test(t)) {
+    type = 'debt';
+  } else if (/entrou|recebi|entrada|recebido|salário|salario/.test(t)) {
+    type = 'income';
+  } else if (/conta|vence|parcela|boleto/.test(t)) {
+    type = 'bill';
+    dueDay = parseDueDay(t);
+  } else {
+    type = 'expense';
+  }
+
+  if (type === 'debt') {
+    const debt = {
+      id: uid(),
+      name: cleanDesc.replace(/^divida?\s*/i,'').trim() || 'Dívida',
+      value,
+      status: 'mapeada',
+      reviewDate: '',
+      note: '',
+      createdAt: todayStr(),
+    };
+    debts.push(debt);
+    save();
+    showLastRegistered(debt, 'debt');
+    toast('✅ Dívida registrada com sucesso');
+    document.getElementById('quick-input').value = '';
+    return;
+  }
+
+  let keywordsToRemove = ['gasto','gastei','comprei','paguei','entrou','recebi','entrada','recebido','conta','vence','vencimento','dia','parcela','boleto'];
+  let descClean = cleanDesc;
+  keywordsToRemove.forEach(k => { descClean = descClean.replace(new RegExp('\\b'+k+'\\b','gi'),''); });
+  descClean = descClean.replace(/\s+/g,' ').trim();
+  if (!descClean) descClean = type === 'income' ? 'Entrada' : 'Gasto';
+
+  category = detectCategory(raw);
+  status = type === 'bill' ? 'pending' : (type === 'income' ? 'paid' : 'paid');
+
+  const tx = {
+    id: uid(),
+    type,
+    desc: descClean,
+    value,
+    category,
+    status,
+    date: todayStr(),
+    dueDay: dueDay || null,
+  };
+
+  transactions.push(tx);
+  save();
+  showLastRegistered(tx, 'tx');
+  toast('✅ Registrado com sucesso');
+  document.getElementById('quick-input').value = '';
+}
+
+function showLastRegistered(item, kind) {
+  const container = document.getElementById('last-item-container');
+  const wrap = document.getElementById('last-registered');
+  wrap.style.display = 'block';
+  if (kind === 'debt') {
+    container.innerHTML = buildDebtCardHTML(item, true);
+  } else {
+    container.innerHTML = buildTxHTML(item, true);
+  }
+}
+
+// ===================== MANUAL SAVE =====================
+document.addEventListener('DOMContentLoaded', () => {
+  formatDateInput(document.getElementById('manual-date'));
+  formatDateInput(document.getElementById('edit-date'));
+  formatDateInput(document.getElementById('debt-review'));
+  document.getElementById('manual-type').addEventListener('change', function() {
+    document.getElementById('manual-dueday-group').style.display = this.value === 'bill' ? 'block' : 'none';
+  });
+  document.getElementById('currentMonth').textContent = monthLabel();
+  renderDashboard();
+});
+
+function saveManual() {
+  const type = document.getElementById('manual-type').value;
+  const value = parseFloat(document.getElementById('manual-value').value);
+  const desc = document.getElementById('manual-desc').value.trim();
+  const cat = document.getElementById('manual-cat').value;
+  const date = document.getElementById('manual-date').value || todayStr();
+  const dueDay = document.getElementById('manual-dueday').value || null;
+
+  if (!value || value <= 0) { toast('Informe um valor válido'); return; }
+  if (!desc) { toast('Informe uma descrição'); return; }
+
+  if (type === 'debt') {
+    debts.push({ id: uid(), name: desc, value, status: 'mapeada', reviewDate: '', note: '', createdAt: date });
+    save(); toast('✅ Dívida salva'); renderDebts('all'); return;
+  }
+
+  const tx = {
+    id: uid(), type, desc, value, category: cat,
+    status: type === 'bill' ? 'pending' : (type === 'income' ? 'paid' : 'paid'),
+    date, dueDay: dueDay ? parseInt(dueDay) : null,
+  };
+  transactions.push(tx);
+  save();
+  toast('✅ Lançamento salvo');
+  document.getElementById('manual-desc').value = '';
+  document.getElementById('manual-value').value = '';
+  renderDashboard();
+}
+
+// ===================== DASHBOARD =====================
+function renderDashboard() {
+  const now = new Date();
+  const mo = now.getMonth()+1, yr = now.getFullYear();
+
+  const txMonth = transactions.filter(t => isCurrentMonth(t.date));
+  const income = txMonth.filter(t => t.type === 'income' && t.status === 'paid').reduce((s,t) => s+t.value, 0);
+  const expense = txMonth.filter(t => t.type === 'expense' && t.status === 'paid').reduce((s,t) => s+t.value, 0);
+  const pending = txMonth.filter(t => t.type === 'bill' && t.status === 'pending').reduce((s,t) => s+t.value, 0);
+  const incoming = txMonth.filter(t => t.type === 'income' && t.status === 'pending').reduce((s,t) => s+t.value, 0);
+  const totalDebt = debts.filter(d => d.status !== 'quitada').reduce((s,d) => s+d.value, 0);
+  const balance = income - expense + settings.availableBalance;
+  const survival = Math.max(0, settings.survivalTarget - income);
+  const survivalPct = settings.survivalTarget > 0 ? Math.min(100, Math.round((income / settings.survivalTarget) * 100)) : 0;
+
+  document.getElementById('dash-income').textContent = fmtBRL(income);
+  document.getElementById('dash-expense').textContent = fmtBRL(expense);
+  const balEl = document.getElementById('dash-balance');
+  balEl.textContent = fmtBRL(balance);
+  balEl.className = 'card-value ' + (balance >= 0 ? 'green' : 'red');
+  document.getElementById('dash-pending').textContent = fmtBRL(pending);
+  document.getElementById('dash-incoming').textContent = fmtBRL(incoming);
+  document.getElementById('dash-debts').textContent = fmtBRL(totalDebt);
+  document.getElementById('dash-survival').textContent = fmtBRL(survival);
+  document.getElementById('survival-pct').textContent = survivalPct + '%';
+  const bar = document.getElementById('survival-bar');
+  bar.style.width = survivalPct + '%';
+  bar.className = 'progress-bar ' + (survivalPct >= 100 ? 'ok' : survivalPct >= 60 ? 'warn' : 'danger');
+
+  // Upcoming bills (next 30 days)
+  const bills = transactions.filter(t => t.type === 'bill' && t.status === 'pending' && t.dueDay);
+  const upcomingList = document.getElementById('upcoming-bills-list');
+  const noBills = document.getElementById('no-bills');
+  if (bills.length === 0) {
+    noBills.style.display = 'block';
+    upcomingList.innerHTML = '';
+  } else {
+    noBills.style.display = 'none';
+    upcomingList.innerHTML = bills.slice(0, 6).map(b => `
+      <div class="bill-item">
+        <div>
+          <div class="bill-desc">${b.desc}</div>
+          <div class="bill-meta">Vence dia ${b.dueDay} · ${b.category}</div>
+        </div>
+        <div class="bill-val">${fmtBRL(b.value)}</div>
+      </div>
+    `).join('');
+  }
+}
+
+// ===================== TRANSACTIONS =====================
+let currentFilter = 'all';
+function filterTx(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('#screen-lancamentos .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTx(f);
+}
+
+function renderTx(filter) {
+  const list = document.getElementById('tx-list');
+  let items = [...transactions].sort((a,b) => b.id.localeCompare(a.id));
+  if (filter !== 'all') items = items.filter(t => t.type === filter);
+  if (items.length === 0) {
+    list.innerHTML = '<div class="empty"><div class="empty-icon">📋</div>Nenhum lançamento encontrado</div>';
+    return;
+  }
+  list.innerHTML = items.map(t => buildTxHTML(t, false)).join('');
+}
+
+function buildTxHTML(t, compact) {
+  const icons = { income: '💰', expense: '💸', bill: '📄', debt: '🧾' };
+  const typeLabels = { income: 'Entrada', expense: 'Gasto', bill: 'Conta', debt: 'Dívida' };
+  const statusBadge = t.status === 'paid'
+    ? '<span class="badge badge-paid">Pago</span>'
+    : '<span class="badge badge-pending">Pendente</span>';
+  return `
+    <div class="tx-item" id="txitem-${t.id}">
+      <div class="tx-icon ${t.type}">${icons[t.type]||'💳'}</div>
+      <div class="tx-body">
+        <div class="tx-desc">${t.desc}</div>
+        <div class="tx-meta">${t.date} · ${t.category} · ${typeLabels[t.type]}</div>
+        <div style="margin-top:4px">${statusBadge}</div>
+      </div>
+      <div class="tx-right">
+        <div class="tx-val ${t.type}">${t.type==='income'?'+':'-'}${fmtBRL(t.value)}</div>
+        <div class="tx-actions">
+          <button class="btn btn-ghost btn-sm" onclick="openTxEdit('${t.id}')">✏️</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteTx('${t.id}')">🗑</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function deleteTx(id) {
+  transactions = transactions.filter(t => t.id !== id);
+  save();
+  renderTx(currentFilter);
+  renderDashboard();
+  toast('Lançamento removido');
+}
+
+function openTxEdit(id) {
+  const t = transactions.find(x => x.id === id);
+  if (!t) return;
+  document.getElementById('edit-id').value = id;
+  document.getElementById('edit-type').value = t.type;
+  document.getElementById('edit-value').value = t.value;
+  document.getElementById('edit-desc').value = t.desc;
+  document.getElementById('edit-cat').value = t.category;
+  document.getElementById('edit-date').value = t.date;
+  document.getElementById('edit-status').value = t.status;
+  openModal('modal-tx');
+}
+
+function saveTxEdit() {
+  const id = document.getElementById('edit-id').value;
+  const idx = transactions.findIndex(t => t.id === id);
+  if (idx < 0) return;
+  transactions[idx] = {
+    ...transactions[idx],
+    type: document.getElementById('edit-type').value,
+    value: parseFloat(document.getElementById('edit-value').value),
+    desc: document.getElementById('edit-desc').value,
+    category: document.getElementById('edit-cat').value,
+    date: document.getElementById('edit-date').value,
+    status: document.getElementById('edit-status').value,
+  };
+  save();
+  closeModal('modal-tx');
+  renderTx(currentFilter);
+  renderDashboard();
+  toast('✅ Lançamento atualizado');
+}
+
+// ===================== DEBTS =====================
+let currentDebtFilter = 'all';
+function filterDebts(f, btn) {
+  currentDebtFilter = f;
+  document.querySelectorAll('#screen-dividas .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderDebts(f);
+}
+
+function renderDebts(filter) {
+  const list = document.getElementById('debt-list');
+  let items = [...debts].sort((a,b) => b.id.localeCompare(a.id));
+  if (filter !== 'all') items = items.filter(d => d.status === filter);
+
+  const total = debts.filter(d => d.status !== 'quitada').reduce((s,d) => s+d.value, 0);
+  document.getElementById('total-debts-val').textContent = fmtBRL(total);
+
+  if (items.length === 0) {
+    list.innerHTML = '<div class="empty"><div class="empty-icon">🧾</div>Nenhuma dívida encontrada</div>';
+    return;
+  }
+  list.innerHTML = items.map(d => buildDebtCardHTML(d, false)).join('');
+}
+
+function buildDebtCardHTML(d, compact) {
+  const statusMap = {
+    'mapeada': 'badge-mapeada',
+    'em espera estratégica': 'badge-espera',
+    'em negociação': 'badge-negociacao',
+    'acordo ativo': 'badge-acordo',
+    'quitada': 'badge-quitada',
+  };
+  const statusLabels = {
+    'mapeada': 'Mapeada',
+    'em espera estratégica': 'Em Espera',
+    'em negociação': 'Em Negociação',
+    'acordo ativo': 'Acordo Ativo',
+    'quitada': 'Quitada',
+  };
+  return `
+    <div class="debt-card" id="debtcard-${d.id}">
+      <div class="debt-header">
+        <div>
+          <div class="debt-name">${d.name}</div>
+          ${d.note ? `<div style="font-size:12px;color:var(--text2);margin-top:2px">${d.note}</div>` : ''}
+        </div>
+        <div class="debt-val">${fmtBRL(d.value)}</div>
+      </div>
+      <div class="debt-footer">
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+          <span class="badge ${statusMap[d.status]||'badge-mapeada'}">${statusLabels[d.status]||d.status}</span>
+          ${d.reviewDate ? `<span style="font-size:11px;color:var(--text2)">Revisão: ${d.reviewDate}</span>` : ''}
+        </div>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-ghost btn-sm" onclick="openDebtModal('${d.id}')">✏️</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteDebt('${d.id}')">🗑</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function openDebtModal(id) {
+  document.getElementById('debt-edit-id').value = id || '';
+  if (id) {
+    const d = debts.find(x => x.id === id);
+    if (!d) return;
+    document.getElementById('modal-debt-title').textContent = 'Editar Dívida';
+    document.getElementById('debt-name').value = d.name;
+    document.getElementById('debt-value').value = d.value;
+    document.getElementById('debt-status').value = d.status;
+    document.getElementById('debt-review').value = d.reviewDate || '';
+    document.getElementById('debt-note').value = d.note || '';
+  } else {
+    document.getElementById('modal-debt-title').textContent = 'Nova Dívida';
+    document.getElementById('debt-name').value = '';
+    document.getElementById('debt-value').value = '';
+    document.getElementById('debt-status').value = 'mapeada';
+    document.getElementById('debt-review').value = '';
+    document.getElementById('debt-note').value = '';
+  }
+  openModal('modal-debt');
+}
+
+function saveDebt() {
+  const id = document.getElementById('debt-edit-id').value;
+  const name = document.getElementById('debt-name').value.trim();
+  const value = parseFloat(document.getElementById('debt-value').value);
+  const status = document.getElementById('debt-status').value;
+  const reviewDate = document.getElementById('debt-review').value;
+  const note = document.getElementById('debt-note').value.trim();
+
+  if (!name) { toast('Informe o nome do credor'); return; }
+  if (!value || value <= 0) { toast('Informe um valor válido'); return; }
+
+  if (id) {
+    const idx = debts.findIndex(d => d.id === id);
+    if (idx >= 0) debts[idx] = { ...debts[idx], name, value, status, reviewDate, note };
+  } else {
+    debts.push({ id: uid(), name, value, status, reviewDate, note, createdAt: todayStr() });
+  }
+  save();
+  closeModal('modal-debt');
+  renderDebts(currentDebtFilter);
+  renderDashboard();
+  toast('✅ Dívida salva');
+}
+
+function deleteDebt(id) {
+  debts = debts.filter(d => d.id !== id);
+  save();
+  renderDebts(currentDebtFilter);
+  renderDashboard();
+  toast('Dívida removida');
+}
+
+// ===================== JARS =====================
+const jarColors = ['#6c63ff','#22c55e','#3b82f6','#f59e0b','#ec4899','#2dd4bf','#ef4444'];
+
+function renderJars() {
+  const income = transactions
+    .filter(t => t.type === 'income' && t.status === 'paid' && isCurrentMonth(t.date))
+    .reduce((s,t) => s+t.value, 0);
+  document.getElementById('jars-income').textContent = fmtBRL(income);
+
+  const list = document.getElementById('jars-list');
+  list.innerHTML = jars.map((j, i) => {
+    const suggested = income * (j.pct / 100);
+    const fillPct = suggested > 0 ? Math.min(100, Math.round((j.balance / suggested) * 100)) : 0;
+    return `
+      <div class="jar-card">
+        <div class="jar-header">
+          <div class="jar-name">${j.name}</div>
+          <span class="jar-pct">${j.pct}%</span>
+        </div>
+        <div class="jar-bar-bg">
+          <div class="jar-bar" style="width:${fillPct}%;background:${jarColors[i]}"></div>
+        </div>
+        <div style="font-size:12px;color:var(--text2);margin-bottom:8px">
+          Sugerido: <strong style="color:var(--text)">${fmtBRL(suggested)}</strong> ·
+          Saldo: <strong style="color:${jarColors[i]}">${fmtBRL(j.balance)}</strong>
+        </div>
+        <div class="jar-footer">
+          <input type="number" placeholder="Saldo atual" value="${j.balance||''}" step="0.01" min="0"
+            onchange="updateJarBalance(${j.id}, this.value)"
+            style="width:150px">
+          <span style="font-size:12px;color:var(--text3)">${fillPct}% do meta</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function updateJarBalance(id, val) {
+  const idx = jars.findIndex(j => j.id === id);
+  if (idx >= 0) { jars[idx].balance = parseFloat(val) || 0; save(); }
+}
+
+// ===================== SETTINGS =====================
+function loadSettings() {
+  document.getElementById('cfg-survival').value = settings.survivalTarget || '';
+  document.getElementById('cfg-balance').value = settings.availableBalance || '';
+}
+
+function saveSettings() {
+  settings.survivalTarget = parseFloat(document.getElementById('cfg-survival').value) || 0;
+  settings.availableBalance = parseFloat(document.getElementById('cfg-balance').value) || 0;
+  save();
+  toast('✅ Configurações salvas');
+  renderDashboard();
+}
+
+function confirmClearAll() {
+  if (confirm('Tem certeza? Todos os dados serão apagados permanentemente.')) {
+    localStorage.removeItem('mf_tx');
+    localStorage.removeItem('mf_debts');
+    localStorage.removeItem('mf_jars');
+    localStorage.removeItem('mf_settings');
+    transactions = []; debts = [];
+    jars = [
+      { id: 1, name: 'Sobrevivência / Necessidades', pct: 55, balance: 0 },
+      { id: 2, name: 'Liberdade Financeira', pct: 10, balance: 0 },
+      { id: 3, name: 'Educação', pct: 10, balance: 0 },
+      { id: 4, name: 'Diversão', pct: 10, balance: 0 },
+      { id: 5, name: 'Longo Prazo', pct: 10, balance: 0 },
+      { id: 6, name: 'Generosidade', pct: 5, balance: 0 },
+      { id: 7, name: 'Regularização / Dívidas', pct: 0, balance: 0 },
+    ];
+    settings = { survivalTarget: 3000, availableBalance: 0 };
+    save();
+    renderDashboard();
+    toast('Dados apagados');
+  }
+}
+
+// ===================== MODAL =====================
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', function(e) { if (e.target === this) this.classList.remove('open'); });
+});
+
+// ===================== TOAST =====================
+let toastTimer;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+// ===================== HINTS =====================
+function setHint(text) {
+  document.getElementById('quick-input').value = text;
+  document.getElementById('quick-input').focus();
+}
+</script>
+</body>
+</html>
