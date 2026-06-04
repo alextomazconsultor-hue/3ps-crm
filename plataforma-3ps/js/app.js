@@ -11,23 +11,109 @@ const STATE = {
   logoClickTimer:  null
 };
 
-// ---- PROGRESSO (localStorage) ----
-const KEY_DONE = '3ps_completed';
-const KEY_LAST = '3ps_last';
+// ---- E-MAIL DO ALUNO (identificador sem auth) ----
+let CURRENT_EMAIL = localStorage.getItem('3ps_email') || null;
 
+// ---- SUPABASE DISPONÍVEL? ----
+const SB_OK = (
+  typeof SUPABASE_URL !== 'undefined' &&
+  SUPABASE_URL !== 'COLE_AQUI_SUA_SUPABASE_URL'
+);
+
+// ---- PROGRESSO EM MEMÓRIA (carregado do Supabase ou localStorage) ----
+let COMPLETED_CACHE = null; // null = ainda não carregado
+let LAST_CACHE      = null; // null = ainda não carregado
+
+// ---- CHAVES localStorage ----
+const KEY_DONE  = '3ps_completed';
+const KEY_LAST  = '3ps_last';
+const KEY_EMAIL = '3ps_email';
+const KEY_NAME  = '3ps_name';
+
+// Retorna lista de aulas concluídas (cache > localStorage)
 function getCompleted() {
+  if (COMPLETED_CACHE !== null) return COMPLETED_CACHE;
   try { return JSON.parse(localStorage.getItem(KEY_DONE)) || []; }
   catch { return []; }
 }
+
+// Salva localmente e sincroniza cache
 function saveCompleted(arr) {
+  COMPLETED_CACHE = arr;
   localStorage.setItem(KEY_DONE, JSON.stringify(arr));
 }
+
+// Retorna última aula (cache > localStorage)
 function getLast() {
+  if (LAST_CACHE !== null) return LAST_CACHE;
   try { return JSON.parse(localStorage.getItem(KEY_LAST)) || null; }
   catch { return null; }
 }
+
+// Salva localmente, sincroniza cache e persiste no Supabase (async, sem bloquear)
 function saveLast(moduleId, lessonId) {
-  localStorage.setItem(KEY_LAST, JSON.stringify({ moduleId, lessonId }));
+  LAST_CACHE = { moduleId, lessonId };
+  localStorage.setItem(KEY_LAST, JSON.stringify(LAST_CACHE));
+  if (SB_OK && CURRENT_EMAIL) saveLastLessonToSupabase(CURRENT_EMAIL, moduleId, lessonId);
+}
+
+// =============================================
+// SUPABASE — CARREGAR PROGRESSO
+// =============================================
+async function loadProgressFromSupabase(email) {
+  const { data, error } = await supabaseClient
+    .from('student_progress')
+    .select('lesson_id')
+    .eq('email', email)
+    .eq('completed', true);
+
+  if (error) { console.warn('loadProgress:', error.message); return; }
+  COMPLETED_CACHE = (data || []).map(r => r.lesson_id);
+  // Sincronizar no localStorage também
+  localStorage.setItem(KEY_DONE, JSON.stringify(COMPLETED_CACHE));
+}
+
+// =============================================
+// SUPABASE — SALVAR PROGRESSO
+// =============================================
+async function saveProgressToSupabase(email, lessonId) {
+  const { error } = await supabaseClient
+    .from('student_progress')
+    .upsert(
+      { email, lesson_id: lessonId, completed: true, completed_at: new Date().toISOString() },
+      { onConflict: 'email,lesson_id' }
+    );
+  if (error) console.warn('saveProgress:', error.message);
+}
+
+// =============================================
+// SUPABASE — CARREGAR ÚLTIMA AULA
+// =============================================
+async function loadLastLessonFromSupabase(email) {
+  const { data, error } = await supabaseClient
+    .from('student_state')
+    .select('last_module_id, last_lesson_id')
+    .eq('email', email)
+    .single();
+
+  if (error && error.code !== 'PGRST116') { console.warn('loadLast:', error.message); return; }
+  if (!data) return;
+
+  LAST_CACHE = { moduleId: data.last_module_id, lessonId: data.last_lesson_id };
+  localStorage.setItem(KEY_LAST, JSON.stringify(LAST_CACHE));
+}
+
+// =============================================
+// SUPABASE — SALVAR ÚLTIMA AULA
+// =============================================
+async function saveLastLessonToSupabase(email, moduleId, lessonId) {
+  const { error } = await supabaseClient
+    .from('student_state')
+    .upsert(
+      { email, last_module_id: moduleId, last_lesson_id: lessonId, updated_at: new Date().toISOString() },
+      { onConflict: 'email' }
+    );
+  if (error) console.warn('saveLast:', error.message);
 }
 
 // ---- STATS ----
@@ -88,66 +174,19 @@ function showLesson(moduleId, lessonId) {
 }
 
 // =============================================
-// LOGIN COM SUPABASE AUTH
-// =============================================
-async function loginWithSupabase(email, password) {
-  const { data, error } = await supabaseClient.auth.signInWithPassword({
-    email:    email,
-    password: password
-  });
-
-  if (error) {
-    const err = document.getElementById('login-error');
-    err.textContent = traduzirErro(error.message);
-    err.classList.remove('hidden');
-    const btn = document.querySelector('#form-login button[type="submit"]');
-    btn.textContent = 'Entrar na plataforma';
-    btn.disabled = false;
-    return;
-  }
-
-  // Salvar nome no localStorage para saudação (usa parte do e-mail como fallback)
-  const nome = data.user.user_metadata?.name || email.split('@')[0];
-  localStorage.setItem('3ps_name', nome);
-
-  enterApp();
-}
-
-function traduzirErro(msg) {
-  if (msg.includes('Invalid login credentials')) return 'E-mail ou senha incorretos.';
-  if (msg.includes('Email not confirmed'))       return 'Confirme seu e-mail antes de entrar.';
-  if (msg.includes('Too many requests'))         return 'Muitas tentativas. Aguarde um momento.';
-  return 'Erro ao entrar. Tente novamente.';
-}
-
-// =============================================
-// VERIFICAR SESSÃO AO CARREGAR A PÁGINA
+// LOGIN (aberto — qualquer e-mail/senha aceitos)
 // =============================================
 async function initAuth() {
-  const { data: { session } } = await supabaseClient.auth.getSession();
-
-  if (session) {
-    // Sessão ativa — entra direto no app
-    const nome = session.user.user_metadata?.name || session.user.email.split('@')[0];
-    localStorage.setItem('3ps_name', nome);
+  // Já logado anteriormente?
+  if (CURRENT_EMAIL) {
+    if (SB_OK) {
+      await loadProgressFromSupabase(CURRENT_EMAIL);
+      await loadLastLessonFromSupabase(CURRENT_EMAIL);
+    }
     enterApp();
     return;
   }
 
-  // Sem sessão — ouvir mudanças de auth (ex: login em outra aba)
-  supabaseClient.auth.onAuthStateChange((event, session) => {
-    if (event === 'SIGNED_IN' && session) {
-      const nome = session.user.user_metadata?.name || session.user.email.split('@')[0];
-      localStorage.setItem('3ps_name', nome);
-      enterApp();
-    }
-    if (event === 'SIGNED_OUT') {
-      document.getElementById('app-shell').classList.add('hidden');
-      document.getElementById('screen-login').classList.add('active');
-    }
-  });
-
-  // Ouvir submissão do formulário de login
   document.getElementById('form-login').addEventListener('submit', async e => {
     e.preventDefault();
     const email = document.getElementById('input-email').value.trim();
@@ -165,7 +204,20 @@ async function initAuth() {
     btn.textContent = 'Entrando...';
     btn.disabled = true;
 
-    await loginWithSupabase(email, pass);
+    CURRENT_EMAIL = email;
+    localStorage.setItem(KEY_EMAIL, email);
+
+    const nome = email.split('@')[0];
+    localStorage.setItem(KEY_NAME, nome);
+
+    if (SB_OK) {
+      await loadProgressFromSupabase(email);
+      await loadLastLessonFromSupabase(email);
+    }
+
+    btn.textContent = 'Entrar na plataforma';
+    btn.disabled = false;
+    enterApp();
   });
 }
 
@@ -181,11 +233,18 @@ function enterApp() {
 }
 
 // =============================================
-// LOGOUT COM SUPABASE AUTH
+// LOGOUT
 // =============================================
-async function logout() {
-  await supabaseClient.auth.signOut();
-  // onAuthStateChange cuida de esconder o app e mostrar o login
+function logout() {
+  CURRENT_EMAIL   = null;
+  COMPLETED_CACHE = null;
+  LAST_CACHE      = null;
+  localStorage.removeItem(KEY_EMAIL);
+  localStorage.removeItem(KEY_NAME);
+  localStorage.removeItem(KEY_DONE);
+  localStorage.removeItem(KEY_LAST);
+  document.getElementById('app-shell').classList.add('hidden');
+  document.getElementById('screen-login').classList.add('active');
 }
 
 // =============================================
@@ -197,9 +256,11 @@ function handleLogoClick() {
   STATE.logoClickTimer = setTimeout(() => { STATE.logoClickCount = 0; }, 2000);
   if (STATE.logoClickCount >= 5) {
     STATE.logoClickCount = 0;
+    COMPLETED_CACHE = null;
+    LAST_CACHE      = null;
     localStorage.removeItem(KEY_DONE);
     localStorage.removeItem(KEY_LAST);
-    showToast('Progresso da demo resetado.');
+    showToast('Progresso resetado.');
     if (STATE.currentScreen === 'dashboard') renderDashboard();
   }
 }
@@ -418,6 +479,7 @@ function markComplete(moduleId, lessonId) {
   if (!done.includes(lessonId)) {
     done.push(lessonId);
     saveCompleted(done);
+    if (SB_OK && CURRENT_EMAIL) saveProgressToSupabase(CURRENT_EMAIL, lessonId);
   }
   const btnC = document.getElementById('btn-complete');
   btnC.textContent = '✓ Aula concluída'; btnC.disabled = true; btnC.style.opacity = '0.5';
