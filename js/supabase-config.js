@@ -1,4 +1,4 @@
-const SUPABASE_URL = 'COLE_AQUI_SUA_SUPABASE_URL';
-const SUPABASE_ANON_KEY = 'COLE_AQUI_SUA_CHAVE_PUBLICAVEL';
+const SUPABASE_URL = https://pqhmmgskgcmbzrygeynp.supabase.co
+const SUPABASE_ANON_KEY = sb_publishable_rPK909lZax0-OjogQ1claA_kBMv6ruy
 
 window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
